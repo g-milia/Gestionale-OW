@@ -15,3 +15,7 @@ Gestionale statico per GitHub Pages.
 ## Uso
 
 Aprire la pagina, configurare owner/repository/branch e inserire un token GitHub con permesso `Contents: Read and write`. Il token viene conservato solo in `sessionStorage`. Gli eventi vengono salvati in `events/<codice>.json` e aperti tramite codice + secret.
+
+## GitHub Pages
+
+Pubblicazione dal branch `main`, directory `/(root)`.
