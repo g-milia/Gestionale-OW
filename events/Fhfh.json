@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "id": "Fhfh",
+  "secret": "OW-CBQE-D4J7",
+  "createdAt": "2026-09-09T20:25:30.387Z",
+  "savedAt": "2026-09-09T20:28:26.250Z",
+  "event": {
+    "name": "Nuova gara di nuoto",
+    "date": "",
+    "venue": "",
+    "notes": "",
+    "pathNotes": "",
+    "athleteTotal": 0,
+    "athleteDescription": "",
+    "athleteDepartures": []
+  },
+  "timeline": [],
+  "officials": [],
+  "roleCategories": [],
+  "refereeNotes": {
+    "briefingAthletes": "",
+    "briefingJury": "",
+    "checklist": []
+  }
+}
