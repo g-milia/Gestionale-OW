@@ -1,7 +1,8 @@
 (() => {
   window.OWGithub = {
     async request(config, path, options = {}) {
-      const response = await fetch(`https://api.github.com${path}`, {
+      const url = `https://api.github.com${path}`;
+      const response = await fetch(url, {
         ...options,
         headers: {
           Accept: "application/vnd.github+json",
@@ -10,12 +11,24 @@
           ...(options.headers || {})
         }
       });
+
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        const error = new Error(data.message || `Errore GitHub ${response.status}`);
+        const details = [
+          `GitHub HTTP ${response.status} ${response.statusText}`,
+          data.message ? `Messaggio: ${data.message}` : null,
+          data.documentation_url ? `Documentazione: ${data.documentation_url}` : null,
+          data.status ? `Status API: ${data.status}` : null,
+          `Richiesta: ${options.method || "GET"} ${path}`
+        ].filter(Boolean).join(" | ");
+
+        const error = new Error(details);
         error.status = response.status;
+        error.github = data;
+        error.requestPath = path;
         throw error;
       }
+
       return response.status === 204 ? null : response.json();
     }
   };
