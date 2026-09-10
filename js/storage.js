@@ -1,20 +1,20 @@
 (() => {
-  const KEYS = { owner: "owGithubOwner", repo: "owGithubRepo", branch: "owGithubBranch", token: "owGithubToken" };
+  const TOKEN_KEY = "owGithubToken";
+
   window.OWStorage = {
     loadGithubConfig() {
       return {
-        owner: localStorage.getItem(KEYS.owner) || "g-milia",
-        repo: localStorage.getItem(KEYS.repo) || "Gestionale-OW",
-        branch: localStorage.getItem(KEYS.branch) || "main",
-        token: sessionStorage.getItem(KEYS.token) || ""
+        owner: "g-milia",
+        repo: "Gestionale-OW",
+        branch: "main",
+        token: sessionStorage.getItem(TOKEN_KEY) || ""
       };
     },
     saveGithubConfig(config) {
-      localStorage.setItem(KEYS.owner, config.owner || "");
-      localStorage.setItem(KEYS.repo, config.repo || "");
-      localStorage.setItem(KEYS.branch, config.branch || "main");
-      sessionStorage.setItem(KEYS.token, config.token || "");
+      sessionStorage.setItem(TOKEN_KEY, config.token || "");
     },
-    clearToken() { sessionStorage.removeItem(KEYS.token); }
+    clearToken() {
+      sessionStorage.removeItem(TOKEN_KEY);
+    }
   };
 })();
