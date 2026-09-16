@@ -19,7 +19,7 @@ async function gh(path,opt={}){if(!requireToken())throw new Error('Token API Git
 function openAccess(mode){
   accessMode=mode;
   $('eventAccessTitle').textContent=mode==='new'?'Nuovo evento':'Apri evento';
-  $('eventAccessHint').textContent=mode==='new'?'Inserisci il codice evento e il token API GitHub.':'Inserisci il codice evento e il token API GitHub.';
+  $('eventAccessHint').textContent='Inserisci il codice evento e il token API GitHub.';
   $('eventCodeInput').value=mode==='new'?'':state.id;
   $('eventTokenInput').value=config.token||'';
   $('eventAccessConfirmBtn').textContent=mode==='new'?'Crea evento':'Apri evento';
@@ -48,7 +48,40 @@ function empty(box,text){box.innerHTML=`<div class="empty">${esc(text)}</div>`}
 function renderDepartures(){const box=$('departureList');box.innerHTML='';if(!state.event.athleteDepartures.length)return empty(box,'Nessuna partenza inserita.');state.event.athleteDepartures.forEach(x=>box.append(item(x.name||'Partenza',`${x.time||''}${x.athletes?` · ${x.athletes} atleti`:''}${x.numbers?` · Numeri: ${x.numbers}`:''}${x.notes?`\n${x.notes}`:''}`,()=>editDeparture(x.id),()=>{state.event.athleteDepartures=state.event.athleteDepartures.filter(y=>y.id!==x.id);mark();renderDepartures()})))}
 function renderTimeline(){const box=$('timelineList');box.innerHTML='';if(!state.timeline.length)return empty(box,'Nessuna fase inserita.');state.timeline.forEach(x=>box.append(item(`${x.time||'--:--'} · ${x.title||'Fase'}`,`${x.place||''}${x.notes?`\n${x.notes}`:''}`,()=>editTimeline(x.id),()=>{state.timeline=state.timeline.filter(y=>y.id!==x.id);mark();renderTimeline()})))}
 function renderOfficials(){const box=$('officialList');box.innerHTML='';if(!state.officials.length)return empty(box,'Nessun UG inserito.');state.officials.forEach(x=>box.append(item(x.name||'UG senza nome',x.notes||'',()=>editOfficial(x.id),()=>{state.officials=state.officials.filter(y=>y.id!==x.id);state.roleCategories.forEach(c=>(c.roles||[]).forEach(r=>r.officialIds=(r.officialIds||[]).filter(id=>id!==x.id)));mark();render()})))}
-function renderRoles(){const box=$('roleCategoryList');box.innerHTML='';if(!state.roleCategories.length)return empty(box,'Nessuna categoria ruoli.');state.roleCategories.forEach(cat=>{const card=document.createElement('div');card.className='role-card';card.innerHTML=`<div class="role-head"><input class="cat-name" value="${esc(cat.name||'Categoria')}"><button class="add-role primary">＋ Ruolo</button><button class="del-cat danger">Elimina</button></div><div class="roles"></div>`;card.querySelector('.cat-name').oninput=e=>{cat.name=e.target.value;mark()};card.querySelector('.add-role').onclick=()=>{cat.roles=cat.roles||[];cat.roles.push({id:uid(),name:'Nuovo ruolo',officialIds:[]});mark();renderRoles()};card.querySelector('.del-cat').onclick=()=>{state.roleCategories=state.roleCategories.filter(x=>x.id!==cat.id);mark();renderRoles()};const roles=card.querySelector('.roles');(cat.roles||[]).forEach(r=>{const row=document.createElement('div');row.className='role-row';const opts=state.officials.map(o=>`<option value="${o.id}" ${(r.officialIds||[]).includes(o.id)?'selected':''}>${esc(o.name)}</option>`).join('');row.innerHTML=`<input class="role-name" value="${esc(r.name||'')}"><select class="role-off" multiple size="${Math.min(4,Math.max(2,state.officials.length))}">${opts}</select><button class="danger">Elimina</button>`;row.querySelector('.role-name').oninput=e=>{r.name=e.target.value;mark()};row.querySelector('.role-off').onchange=e=>{r.officialIds=[...e.target.selectedOptions].map(o=>o.value);mark()};row.querySelector('button').onclick=()=>{cat.roles=cat.roles.filter(x=>x.id!==r.id);mark();renderRoles()};roles.append(row)});box.append(card)})}
+function moveArrayItem(arr,index,delta){const next=index+delta;if(next<0||next>=arr.length)return;[arr[index],arr[next]]=[arr[next],arr[index]];mark();renderRoles()}
+function renderRoles(){
+  const box=$('roleCategoryList');box.innerHTML='';
+  if(!state.roleCategories.length)return empty(box,'Nessuna categoria ruoli.');
+  state.roleCategories.forEach((cat,catIndex)=>{
+    cat.roles=cat.roles||[];
+    const card=document.createElement('div');card.className='role-card';
+    card.innerHTML=`<div class="role-head"><input class="cat-name" value="${esc(cat.name||'Categoria')}"><div class="sort-actions"><button class="cat-up" title="Sposta categoria su" ${catIndex===0?'disabled':''}>↑</button><button class="cat-down" title="Sposta categoria giù" ${catIndex===state.roleCategories.length-1?'disabled':''}>↓</button></div><button class="add-role primary">＋ Ruolo</button><button class="del-cat danger">Elimina</button></div><div class="roles"></div>`;
+    card.querySelector('.cat-name').oninput=e=>{cat.name=e.target.value;mark()};
+    card.querySelector('.cat-up').onclick=()=>moveArrayItem(state.roleCategories,catIndex,-1);
+    card.querySelector('.cat-down').onclick=()=>moveArrayItem(state.roleCategories,catIndex,1);
+    card.querySelector('.add-role').onclick=()=>{cat.roles.push({id:uid(),name:'Nuovo ruolo',officialIds:[]});mark();renderRoles()};
+    card.querySelector('.del-cat').onclick=()=>{state.roleCategories=state.roleCategories.filter(x=>x.id!==cat.id);mark();renderRoles()};
+    const roles=card.querySelector('.roles');
+    cat.roles.forEach((r,roleIndex)=>{
+      r.officialIds=r.officialIds||[];
+      const row=document.createElement('div');row.className='role-row';
+      row.innerHTML=`<input class="role-name" value="${esc(r.name||'')}"><div class="assignment-panel"><div class="selected-officials"></div><select class="role-off"><option value="">${state.officials.length?'Assegna UG...':'Crea prima gli UG'}</option></select></div><div class="role-actions"><button class="role-up" title="Sposta ruolo su" ${roleIndex===0?'disabled':''}>↑</button><button class="role-down" title="Sposta ruolo giù" ${roleIndex===cat.roles.length-1?'disabled':''}>↓</button><button class="danger role-delete">Elimina</button></div>`;
+      row.querySelector('.role-name').oninput=e=>{r.name=e.target.value;mark()};
+      const selected=row.querySelector('.selected-officials');
+      if(!r.officialIds.length){const pill=document.createElement('span');pill.className='pill muted-pill';pill.textContent='Nessun UG assegnato';selected.append(pill)}
+      r.officialIds.forEach(id=>{const official=state.officials.find(o=>o.id===id);const tag=document.createElement('span');tag.className='selected-official';tag.innerHTML=`<span>${esc(official?.name||'UG senza nome')}</span><button type="button" class="danger" title="Rimuovi">×</button>`;tag.querySelector('button').onclick=()=>{r.officialIds=r.officialIds.filter(x=>x!==id);mark();renderRoles()};selected.append(tag)});
+      const select=row.querySelector('.role-off');
+      state.officials.filter(o=>!r.officialIds.includes(o.id)).forEach(o=>{const opt=document.createElement('option');opt.value=o.id;opt.textContent=o.name||'UG senza nome';select.append(opt)});
+      select.disabled=!state.officials.length||state.officials.every(o=>r.officialIds.includes(o.id));
+      select.onchange=e=>{const id=e.target.value;if(!id)return;r.officialIds=Array.from(new Set([...r.officialIds,id]));mark();renderRoles()};
+      row.querySelector('.role-up').onclick=()=>moveArrayItem(cat.roles,roleIndex,-1);
+      row.querySelector('.role-down').onclick=()=>moveArrayItem(cat.roles,roleIndex,1);
+      row.querySelector('.role-delete').onclick=()=>{cat.roles=cat.roles.filter(x=>x.id!==r.id);mark();renderRoles()};
+      roles.append(row)
+    });
+    box.append(card)
+  })
+}
 function renderChecklist(){const box=$('checklistBox');box.innerHTML='';const list=state.refereeNotes.checklist||[];if(!list.length)return empty(box,'Checklist vuota.');list.forEach(x=>{const d=document.createElement('div');d.className='checklist-row';d.innerHTML=`<input type="checkbox" ${x.checked?'checked':''}><span>${esc(x.label)}</span><button class="danger">Elimina</button>`;d.querySelector('input').onchange=e=>{x.checked=e.target.checked;mark()};d.querySelector('button').onclick=()=>{state.refereeNotes.checklist=list.filter(y=>y.id!==x.id);mark();renderChecklist()};box.append(d)})}
 function fields(title,defs,values,saveFn){editCtx={defs,saveFn};$('editTitle').textContent=title;const box=$('editFields');box.innerHTML='';defs.forEach(([k,label,type])=>{const l=document.createElement('label');if(type==='textarea')l.className='wide';l.innerHTML=`${label}${type==='textarea'?`<textarea data-key="${k}">${esc(values[k]||'')}</textarea>`:`<input data-key="${k}" type="${type||'text'}" value="${esc(values[k]||'')}">`}`;box.append(l)});$('editDialog').showModal()}
 function editDeparture(id){let x=state.event.athleteDepartures.find(y=>y.id===id);if(!x){x={id:uid(),name:'Partenza',time:'',athletes:'',numbers:'',notes:''};state.event.athleteDepartures.push(x)}fields('Partenza',[['name','Nome'],['time','Orario','time'],['athletes','Numero atleti','number'],['numbers','Numeri'],['notes','Note','textarea']],x,v=>Object.assign(x,v))}
