@@ -2,7 +2,7 @@
   "version": 3,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T18:29:32.800Z",
+  "savedAt": "2026-09-16T18:31:26.444Z",
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
@@ -94,6 +94,22 @@
       "name": "Preparazione ",
       "roles": [
         {
+          "id": "9p350l8rp0nmu4ayzko",
+          "name": "Verifica costumi e attrezzatura",
+          "officialIds": [
+            "2hsqotmv05umu3rbycg",
+            "ypcbpi6y76mu3rd3zb"
+          ]
+        },
+        {
+          "id": "mcnymuskq1bmu4ayxui",
+          "name": "Riconoscimento atleti ",
+          "officialIds": [
+            "au8j1onhkvjmu3rceio",
+            "pgskjcz20ymu3rd9iw"
+          ]
+        },
+        {
           "id": "9r50q9dw91wmu3rfvrr",
           "name": "Punzonatura",
           "officialIds": [
@@ -112,7 +128,7 @@
         },
         {
           "id": "devz6jktx8qmu3rjf51",
-          "name": "Consegna Transponder - Ritiro tesserini e Riconsegna",
+          "name": "Consegna Transponder - Ritiro tesserini (Riconsegna)",
           "officialIds": [
             "ypcbpi6y76mu3rd3zb"
           ]
@@ -122,22 +138,6 @@
           "name": "Appello - Recorder ",
           "officialIds": [
             "l21wegjye6hmu3rcycv"
-          ]
-        },
-        {
-          "id": "mcnymuskq1bmu4ayxui",
-          "name": "Riconoscimento atleti ",
-          "officialIds": [
-            "au8j1onhkvjmu3rceio",
-            "pgskjcz20ymu3rd9iw"
-          ]
-        },
-        {
-          "id": "9p350l8rp0nmu4ayzko",
-          "name": "Verifica costumi e attrezzatura",
-          "officialIds": [
-            "2hsqotmv05umu3rbycg",
-            "ypcbpi6y76mu3rd3zb"
           ]
         }
       ]
@@ -228,6 +228,13 @@
           "name": "Coppia 1",
           "officialIds": [
             "au8j1onhkvjmu3rceio",
+            "pgskjcz20ymu3rd9iw"
+          ]
+        },
+        {
+          "id": "kaqlottp5upmu4fs2du",
+          "name": "Riconsegna tesserini",
+          "officialIds": [
             "ypcbpi6y76mu3rd3zb"
           ]
         }
