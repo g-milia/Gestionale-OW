@@ -1,0 +1,92 @@
+{
+  "version": 3,
+  "id": "WPS-OW-CUP-Sardinia-2026",
+  "createdAt": "2026-09-16T06:58:39.830Z",
+  "savedAt": "2026-09-16T07:07:45.312Z",
+  "event": {
+    "name": "WPS-OW-CUP-Sardinia-2026",
+    "date": "2026-09-19",
+    "venue": "Lido S.Giovanni",
+    "notes": "Categorie S3-S6 1,5 km\nCategorie S7-S10 + S11-S14 3,0 Km",
+    "pathNotes": "Circuito da percorrere in senso antiorario con 4 boe obbligatorie - 1.5 km Categorie S3-S6;\n\nCircuito da percorrere in senso antiorario con 4 boe obbligatorie x 2 - 3.0 km Categorie S7-S10 + S11-S14",
+    "athleteTotal": 35,
+    "athleteDescription": "10 atleti (6M+4F) 1.5 km Categorie S3-S6;\n25 atleti (13M+12F) 3.0 km Categorie S7-S10 + S11-S14",
+    "athleteDepartures": [
+      {
+        "id": "d5pnuuxx0nmmu3r8u2y",
+        "name": "S3-S6",
+        "time": "10:00",
+        "athletes": 10,
+        "numbers": "",
+        "notes": "Tempo limite 60minuti (?) ore 11:00"
+      },
+      {
+        "id": "tqxhfv9rv2mu3rad1t",
+        "name": "S7-S10+S11-S14",
+        "time": "11:00",
+        "athletes": 25,
+        "numbers": "",
+        "notes": "Tempo limite 90minuti (?) ore 12:30"
+      }
+    ]
+  },
+  "timeline": [],
+  "officials": [
+    {
+      "id": "rxerj64f4imu3rbfk9",
+      "name": "Alessandro Tangolo",
+      "notes": "Giudice Arbitro"
+    },
+    {
+      "id": "cwuuxry817umu3rbt2h",
+      "name": "Marta Melis",
+      "notes": ""
+    },
+    {
+      "id": "2hsqotmv05umu3rbycg",
+      "name": "Emanuele Alfano",
+      "notes": ""
+    },
+    {
+      "id": "hb02hyh2vxvmu3rc4g8",
+      "name": "Emilia Fois",
+      "notes": ""
+    },
+    {
+      "id": "au8j1onhkvjmu3rceio",
+      "name": "Assunta Mostallino",
+      "notes": ""
+    },
+    {
+      "id": "0l9mdqp0p7vmu3rcs9s",
+      "name": "Antonella Garau",
+      "notes": ""
+    },
+    {
+      "id": "l21wegjye6hmu3rcycv",
+      "name": "Alessandro Canu",
+      "notes": ""
+    },
+    {
+      "id": "ypcbpi6y76mu3rd3zb",
+      "name": "Nicola Ansaldi",
+      "notes": ""
+    },
+    {
+      "id": "pgskjcz20ymu3rd9iw",
+      "name": "Julia Nuzum",
+      "notes": ""
+    },
+    {
+      "id": "73fx2qm909amu3rdfhk",
+      "name": "Marco Ottonello",
+      "notes": ""
+    }
+  ],
+  "roleCategories": [],
+  "refereeNotes": {
+    "briefingAthletes": "",
+    "briefingJury": "",
+    "checklist": []
+  }
+}
