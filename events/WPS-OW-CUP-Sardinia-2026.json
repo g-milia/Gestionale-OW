@@ -2,7 +2,7 @@
   "version": 3,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T18:31:26.444Z",
+  "savedAt": "2026-09-16T18:40:32.910Z",
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
@@ -30,7 +30,85 @@
       }
     ]
   },
-  "timeline": [],
+  "timeline": [
+    {
+      "id": "jnyo3x33rgmu4fsydu",
+      "time": "08:00",
+      "title": "Riunione Giuria",
+      "place": "",
+      "notes": ""
+    },
+    {
+      "id": "plr0hlqia5cmu4ftd6d",
+      "time": "08:00",
+      "title": "Controllo percorso",
+      "place": "",
+      "notes": ""
+    },
+    {
+      "id": "ec8g58iy5kmu4fub5s",
+      "time": "08:30",
+      "title": "Identificazione atleti",
+      "place": "",
+      "notes": "l'identificazione sarà unica per la gara della 1.5 km e per la gara 3.0 km quindi proseguirà anche oltre le 9.30"
+    },
+    {
+      "id": "9ljsdulv2lcmu4fxcqw",
+      "time": "09:30",
+      "title": "Briefing atleti 1.5 km",
+      "place": "",
+      "notes": ""
+    },
+    {
+      "id": "m2ytq6uwtvlmu4fxtev",
+      "time": "09:40",
+      "title": "Imbarco giudici",
+      "place": "",
+      "notes": ""
+    },
+    {
+      "id": "f4itpiqkaa5mu4fyegr",
+      "time": "09:45",
+      "title": "Chiamata atleti 1.5 km",
+      "place": "",
+      "notes": ""
+    },
+    {
+      "id": "h9iabsn2155mu4fzjdn",
+      "time": "10:00",
+      "title": "Partenza 1.5 km",
+      "place": "",
+      "notes": ""
+    },
+    {
+      "id": "dp7oubx80pqmu4fzv8j",
+      "time": "10:40",
+      "title": "Briefing atleti 3.0 km",
+      "place": "",
+      "notes": ""
+    },
+    {
+      "id": "5qrm5jof47wmu4g0gqa",
+      "time": "10:55",
+      "title": "Chiamata atleti 3.0 km ",
+      "place": "",
+      "notes": "Reimbarco GA (da verificare)"
+    },
+    {
+      "id": "9pwug4uo5ljmu4g0vx9",
+      "time": "11:00",
+      "title": "Partenza atleti 3.0 km",
+      "place": "",
+      "notes": ""
+    },
+    {
+      "id": "xwkfca3uqfcmu4g24yd",
+      "time": "13:00",
+      "title": "Cerimonia premiazioni",
+      "place": "",
+      "notes": ""
+    }
+  ],
   "officials": [
     {
       "id": "rxerj64f4imu3rbfk9",
