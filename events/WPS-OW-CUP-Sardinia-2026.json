@@ -2,7 +2,7 @@
   "version": 3,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T18:40:32.910Z",
+  "savedAt": "2026-09-16T18:42:44.224Z",
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
@@ -194,7 +194,8 @@
             "cwuuxry817umu3rbt2h",
             "hb02hyh2vxvmu3rc4g8",
             "73fx2qm909amu3rdfhk",
-            "0l9mdqp0p7vmu3rcs9s"
+            "0l9mdqp0p7vmu3rcs9s",
+            "l21wegjye6hmu3rcycv"
           ]
         },
         {
@@ -213,7 +214,7 @@
         },
         {
           "id": "43bmb1q46ximu3rsek9",
-          "name": "Appello - Recorder ",
+          "name": "Appello (Recorder) ",
           "officialIds": [
             "l21wegjye6hmu3rcycv"
           ]
