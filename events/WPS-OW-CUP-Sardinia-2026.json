@@ -2,7 +2,7 @@
   "version": 3,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T07:17:13.859Z",
+  "savedAt": "2026-09-16T07:19:24.649Z",
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
@@ -120,6 +120,13 @@
           "name": "Consegna Transponder",
           "officialIds": [
             "l21wegjye6hmu3rcycv"
+          ]
+        },
+        {
+          "id": "43bmb1q46ximu3rsek9",
+          "name": "Appello ",
+          "officialIds": [
+            "0l9mdqp0p7vmu3rcs9s"
           ]
         }
       ]
