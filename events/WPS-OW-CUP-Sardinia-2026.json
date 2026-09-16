@@ -2,12 +2,12 @@
   "version": 3,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T07:19:59.625Z",
+  "savedAt": "2026-09-16T16:29:41.741Z",
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
     "venue": "Lido S.Giovanni - Alghero",
-    "notes": "Categorie S3-S6 1,5 km\nCategorie S7-S10 + S11-S14 3,0 Km",
+    "notes": "Categorie S3-S6 1,5 km\nCategorie S7-S10 + S11-S14 3,0 Km\n\nPresente il Technical Delegate: Daniele Rocchi",
     "pathNotes": "Circuito da percorrere in senso antiorario con 4 boe obbligatorie - 1.5 km Categorie S3-S6;\n\nCircuito da percorrere in senso antiorario con 4 boe obbligatorie x 2 - 3.0 km Categorie S7-S10 + S11-S14",
     "athleteTotal": 35,
     "athleteDescription": "10 atleti (6M+4F) 1.5 km Categorie S3-S6;\n25 atleti (13M+12F) 3.0 km Categorie S7-S10 + S11-S14",
@@ -40,7 +40,7 @@
     {
       "id": "cwuuxry817umu3rbt2h",
       "name": "Marta Melis",
-      "notes": ""
+      "notes": "Assistant"
     },
     {
       "id": "2hsqotmv05umu3rbycg",
@@ -81,6 +81,11 @@
       "id": "73fx2qm909amu3rdfhk",
       "name": "Marco Ottonello",
       "notes": ""
+    },
+    {
+      "id": "zu7pk57v2tkmu4b292b",
+      "name": "Daniele Rocchi",
+      "notes": "Technical Delegate"
     }
   ],
   "roleCategories": [
@@ -88,16 +93,6 @@
       "id": "wu86fbfh5cmu3rdyz4",
       "name": "Preparazione ",
       "roles": [
-        {
-          "id": "6s62oegwo5gmu3rei5j",
-          "name": "Identificazione atleti ",
-          "officialIds": [
-            "2hsqotmv05umu3rbycg",
-            "au8j1onhkvjmu3rceio",
-            "0l9mdqp0p7vmu3rcs9s",
-            "ypcbpi6y76mu3rd3zb"
-          ]
-        },
         {
           "id": "9r50q9dw91wmu3rfvrr",
           "name": "Punzonatura",
@@ -117,16 +112,32 @@
         },
         {
           "id": "devz6jktx8qmu3rjf51",
-          "name": "Consegna Transponder",
+          "name": "Consegna Transponder - Ritiro tesserini e Riconsegna",
           "officialIds": [
             "l21wegjye6hmu3rcycv"
           ]
         },
         {
           "id": "43bmb1q46ximu3rsek9",
-          "name": "Appello ",
+          "name": "Appello - Recorder ",
           "officialIds": [
             "0l9mdqp0p7vmu3rcs9s"
+          ]
+        },
+        {
+          "id": "mcnymuskq1bmu4ayxui",
+          "name": "Riconoscimento atleti ",
+          "officialIds": [
+            "au8j1onhkvjmu3rceio",
+            "0l9mdqp0p7vmu3rcs9s"
+          ]
+        },
+        {
+          "id": "9p350l8rp0nmu4ayzko",
+          "name": "Verifica costumi e attrezzatura",
+          "officialIds": [
+            "2hsqotmv05umu3rbycg",
+            "ypcbpi6y76mu3rd3zb"
           ]
         }
       ]
@@ -144,35 +155,42 @@
         },
         {
           "id": "c6dwntqubtmu3rl7es",
+          "name": "Technical Delegate - WPS",
+          "officialIds": [
+            "zu7pk57v2tkmu4b292b"
+          ]
+        },
+        {
+          "id": "mcwxl3opvzmu3rlelg",
           "name": "Percorso 1",
           "officialIds": [
             "cwuuxry817umu3rbt2h"
           ]
         },
         {
-          "id": "mcwxl3opvzmu3rlelg",
+          "id": "z2titwsjx4mu3rm1b8",
           "name": "Percorso 2",
+          "officialIds": [
+            "2hsqotmv05umu3rbycg"
+          ]
+        },
+        {
+          "id": "y4xh0u9mudomu3rmzks",
+          "name": "Percorso 3",
           "officialIds": [
             "hb02hyh2vxvmu3rc4g8"
           ]
         },
         {
-          "id": "z2titwsjx4mu3rm1b8",
-          "name": "Percorso 3",
+          "id": "d8fiixbmctfmu3rn9ks",
+          "name": "Percorso 4",
           "officialIds": [
             "73fx2qm909amu3rdfhk"
           ]
         },
         {
-          "id": "y4xh0u9mudomu3rmzks",
-          "name": "Percorso 4 ",
-          "officialIds": [
-            "l21wegjye6hmu3rcycv"
-          ]
-        },
-        {
-          "id": "d8fiixbmctfmu3rn9ks",
-          "name": "Percorso 5 ",
+          "id": "2q4tjsknjunmu4bc7i3",
+          "name": "Percorso 5",
           "officialIds": [
             "pgskjcz20ymu3rd9iw"
           ]
@@ -211,14 +229,6 @@
           "officialIds": [
             "au8j1onhkvjmu3rceio",
             "ypcbpi6y76mu3rd3zb"
-          ]
-        },
-        {
-          "id": "y231ktu1uwrmu3rp63e",
-          "name": "Coppia 2",
-          "officialIds": [
-            "2hsqotmv05umu3rbycg",
-            "0l9mdqp0p7vmu3rcs9s"
           ]
         }
       ]
