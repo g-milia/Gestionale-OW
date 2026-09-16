@@ -2,7 +2,7 @@
   "version": 3,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T16:48:12.859Z",
+  "savedAt": "2026-09-16T18:29:32.800Z",
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
@@ -99,8 +99,8 @@
           "officialIds": [
             "cwuuxry817umu3rbt2h",
             "hb02hyh2vxvmu3rc4g8",
-            "pgskjcz20ymu3rd9iw",
-            "73fx2qm909amu3rdfhk"
+            "73fx2qm909amu3rdfhk",
+            "0l9mdqp0p7vmu3rcs9s"
           ]
         },
         {
@@ -114,14 +114,14 @@
           "id": "devz6jktx8qmu3rjf51",
           "name": "Consegna Transponder - Ritiro tesserini e Riconsegna",
           "officialIds": [
-            "l21wegjye6hmu3rcycv"
+            "ypcbpi6y76mu3rd3zb"
           ]
         },
         {
           "id": "43bmb1q46ximu3rsek9",
           "name": "Appello - Recorder ",
           "officialIds": [
-            "0l9mdqp0p7vmu3rcs9s"
+            "l21wegjye6hmu3rcycv"
           ]
         },
         {
@@ -129,7 +129,7 @@
           "name": "Riconoscimento atleti ",
           "officialIds": [
             "au8j1onhkvjmu3rceio",
-            "0l9mdqp0p7vmu3rcs9s"
+            "pgskjcz20ymu3rd9iw"
           ]
         },
         {
@@ -192,7 +192,7 @@
           "id": "2q4tjsknjunmu4bc7i3",
           "name": "Percorso 5",
           "officialIds": [
-            "pgskjcz20ymu3rd9iw"
+            "0l9mdqp0p7vmu3rcs9s"
           ]
         }
       ]
