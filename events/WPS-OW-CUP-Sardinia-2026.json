@@ -2,7 +2,7 @@
   "version": 3,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T07:07:45.312Z",
+  "savedAt": "2026-09-16T07:17:13.859Z",
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
@@ -64,7 +64,7 @@
     },
     {
       "id": "l21wegjye6hmu3rcycv",
-      "name": "Alessandro Canu",
+      "name": "Alessandra Canu",
       "notes": ""
     },
     {
@@ -83,7 +83,140 @@
       "notes": ""
     }
   ],
-  "roleCategories": [],
+  "roleCategories": [
+    {
+      "id": "wu86fbfh5cmu3rdyz4",
+      "name": "Preparazione ",
+      "roles": [
+        {
+          "id": "6s62oegwo5gmu3rei5j",
+          "name": "Identificazione atleti ",
+          "officialIds": [
+            "2hsqotmv05umu3rbycg",
+            "au8j1onhkvjmu3rceio",
+            "0l9mdqp0p7vmu3rcs9s",
+            "ypcbpi6y76mu3rd3zb"
+          ]
+        },
+        {
+          "id": "9r50q9dw91wmu3rfvrr",
+          "name": "Punzonatura",
+          "officialIds": [
+            "cwuuxry817umu3rbt2h",
+            "hb02hyh2vxvmu3rc4g8",
+            "pgskjcz20ymu3rd9iw",
+            "73fx2qm909amu3rdfhk"
+          ]
+        },
+        {
+          "id": "2agh4gskhenmu3rj1w5",
+          "name": "Verifica percorso e temperatura",
+          "officialIds": [
+            "cwuuxry817umu3rbt2h"
+          ]
+        },
+        {
+          "id": "devz6jktx8qmu3rjf51",
+          "name": "Consegna Transponder",
+          "officialIds": [
+            "l21wegjye6hmu3rcycv"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hokau4uc0mhmu3rfbxb",
+      "name": "Giudici percorso ",
+      "roles": [
+        {
+          "id": "gyjy3qb68tmu3rfsaf",
+          "name": "Giudice Arbitro",
+          "officialIds": [
+            "rxerj64f4imu3rbfk9"
+          ]
+        },
+        {
+          "id": "c6dwntqubtmu3rl7es",
+          "name": "Percorso 1",
+          "officialIds": [
+            "cwuuxry817umu3rbt2h"
+          ]
+        },
+        {
+          "id": "mcwxl3opvzmu3rlelg",
+          "name": "Percorso 2",
+          "officialIds": [
+            "hb02hyh2vxvmu3rc4g8"
+          ]
+        },
+        {
+          "id": "z2titwsjx4mu3rm1b8",
+          "name": "Percorso 3",
+          "officialIds": [
+            "73fx2qm909amu3rdfhk"
+          ]
+        },
+        {
+          "id": "y4xh0u9mudomu3rmzks",
+          "name": "Percorso 4 ",
+          "officialIds": [
+            "l21wegjye6hmu3rcycv"
+          ]
+        },
+        {
+          "id": "d8fiixbmctfmu3rn9ks",
+          "name": "Percorso 5 ",
+          "officialIds": [
+            "pgskjcz20ymu3rd9iw"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cru2rc6m9itmu3rnm4r",
+      "name": "Partenze",
+      "roles": [
+        {
+          "id": "qleog1zemgqmu3rns7f",
+          "name": "Partenza 1",
+          "officialIds": [
+            "rxerj64f4imu3rbfk9",
+            "73fx2qm909amu3rdfhk"
+          ]
+        },
+        {
+          "id": "djqgp0io548mu3ro7ej",
+          "name": "Partenza 2 ",
+          "officialIds": [
+            "rxerj64f4imu3rbfk9",
+            "73fx2qm909amu3rdfhk"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ibwpdrhgoumu3roiub",
+      "name": "Arrivi",
+      "roles": [
+        {
+          "id": "bo8f5zcg64imu3ronej",
+          "name": "Coppia 1",
+          "officialIds": [
+            "au8j1onhkvjmu3rceio",
+            "ypcbpi6y76mu3rd3zb"
+          ]
+        },
+        {
+          "id": "y231ktu1uwrmu3rp63e",
+          "name": "Coppia 2",
+          "officialIds": [
+            "2hsqotmv05umu3rbycg",
+            "0l9mdqp0p7vmu3rcs9s"
+          ]
+        }
+      ]
+    }
+  ],
   "refereeNotes": {
     "briefingAthletes": "",
     "briefingJury": "",
