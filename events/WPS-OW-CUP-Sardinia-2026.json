@@ -2,7 +2,7 @@
   "version": 3,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T18:52:55.886Z",
+  "savedAt": "2026-09-16T20:50:32.459Z",
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
@@ -156,11 +156,6 @@
       "notes": ""
     },
     {
-      "id": "73fx2qm909amu3rdfhk",
-      "name": "Marco Ottonello",
-      "notes": ""
-    },
-    {
       "id": "zu7pk57v2tkmu4b292b",
       "name": "Daniele Rocchi",
       "notes": "Technical Delegate"
@@ -176,15 +171,15 @@
           "name": "Verifica costumi e attrezzatura",
           "officialIds": [
             "2hsqotmv05umu3rbycg",
-            "ypcbpi6y76mu3rd3zb"
+            "au8j1onhkvjmu3rceio"
           ]
         },
         {
           "id": "mcnymuskq1bmu4ayxui",
           "name": "Riconoscimento atleti ",
           "officialIds": [
-            "au8j1onhkvjmu3rceio",
-            "pgskjcz20ymu3rd9iw"
+            "pgskjcz20ymu3rd9iw",
+            "ypcbpi6y76mu3rd3zb"
           ]
         },
         {
@@ -193,7 +188,6 @@
           "officialIds": [
             "cwuuxry817umu3rbt2h",
             "hb02hyh2vxvmu3rc4g8",
-            "73fx2qm909amu3rdfhk",
             "0l9mdqp0p7vmu3rcs9s",
             "l21wegjye6hmu3rcycv"
           ]
@@ -261,15 +255,8 @@
           ]
         },
         {
-          "id": "d8fiixbmctfmu3rn9ks",
-          "name": "Percorso 4",
-          "officialIds": [
-            "73fx2qm909amu3rdfhk"
-          ]
-        },
-        {
           "id": "2q4tjsknjunmu4bc7i3",
-          "name": "Percorso 5",
+          "name": "Percorso 4",
           "officialIds": [
             "0l9mdqp0p7vmu3rcs9s"
           ]
@@ -285,7 +272,7 @@
           "name": "Partenza 1",
           "officialIds": [
             "rxerj64f4imu3rbfk9",
-            "73fx2qm909amu3rdfhk"
+            "2hsqotmv05umu3rbycg"
           ]
         },
         {
@@ -293,7 +280,7 @@
           "name": "Partenza 2 ",
           "officialIds": [
             "rxerj64f4imu3rbfk9",
-            "73fx2qm909amu3rdfhk"
+            "2hsqotmv05umu3rbycg"
           ]
         }
       ]
