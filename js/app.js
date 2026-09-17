@@ -90,8 +90,31 @@ function editOfficial(id){let x=state.officials.find(y=>y.id===id);if(!x){x={id:
 function saveEdit(){if(!editCtx)return;const v={};$('editFields').querySelectorAll('[data-key]').forEach(e=>v[e.dataset.key]=e.type==='number'?Number(e.value||0):e.value);editCtx.saveFn(v);editCtx=null;mark();render()}
 function addChecklist(){const i=$('checklistInput'),v=i.value.trim();if(!v)return;state.refereeNotes.checklist.push({id:uid(),label:v,checked:false});i.value='';mark();renderChecklist()}
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('hidden',x.id!==`view-${v}`));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===v))}
+// Separate preview mode; pdf() below remains the original renderer unchanged.
+function preparePrintPreview(summary) {
+  const frame = $('pdfFrame');
+  const printButton = $('printPdfBtn');
+  const title = summary ? 'Stampa sintetica' : 'Anteprima PDF';
+  $('pdfDialog').querySelector('h2').textContent = title;
+  $('summaryPrintHint').hidden = !summary;
+  frame.title = title;
+  printButton.disabled = true;
+  frame.onload = () => {
+    if (summary && !frame.contentDocument.querySelector('link[rel="stylesheet"]')?.sheet) {
+      status("Impossibile caricare lo stile della stampa sintetica. Chiudi e riapri l'anteprima.", true);
+      return;
+    }
+    printButton.disabled = false;
+  };
+}
+function summaryPdf() {
+  preparePrintPreview(true);
+  const stylesheet = new URL('css/print-summary.css?v=20260917-summary-1', document.baseURI).href;
+  $('pdfFrame').srcdoc = OWUI.buildSummaryPrintHtml(state, stylesheet);
+  $('pdfDialog').showModal();
+}
 function pdf(){const roles=state.roleCategories.map(c=>`<h3>${esc(c.name)}</h3>${(c.roles||[]).map(r=>`<p><b>${esc(r.name)}</b>: ${esc(state.officials.filter(o=>(r.officialIds||[]).includes(o.id)).map(o=>o.name).join(', ')||'—')}</p>`).join('')}`).join('');const html=`<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;padding:32px;color:#18232d}h1{margin-bottom:4px}h2{border-bottom:1px solid #ccc;padding-bottom:5px;margin-top:28px}table{width:100%;border-collapse:collapse}td,th{padding:7px;border-bottom:1px solid #ddd;text-align:left}.muted{color:#666;white-space:pre-wrap}</style></head><body><h1>${esc(state.event.name)}</h1><div>${esc(state.event.date)} · ${esc(state.event.venue)}</div><h2>Evento</h2><p class="muted">${esc(state.event.notes)}</p><p><b>Atleti:</b> ${state.event.athleteTotal||0}</p><p class="muted">${esc(state.event.athleteDescription)}</p><h2>Timeline</h2><table>${state.timeline.map(x=>`<tr><td>${esc(x.time)}</td><td><b>${esc(x.title)}</b><br>${esc(x.place)}</td><td>${esc(x.notes)}</td></tr>`).join('')}</table><h2>Ufficiali Gara</h2>${state.officials.map(o=>`<p><b>${esc(o.name)}</b> ${esc(o.notes)}</p>`).join('')}<h2>Ruoli</h2>${roles}<h2>Briefing</h2><h3>Atleti</h3><p class="muted">${esc(state.refereeNotes.briefingAthletes)}</p><h3>Giuria</h3><p class="muted">${esc(state.refereeNotes.briefingJury)}</p></body></html>`;const f=$('pdfFrame');f.srcdoc=html;$('pdfDialog').showModal()}
 function render(){bind();renderHeader();renderDepartures();renderTimeline();renderOfficials();renderRoles();renderChecklist();$('saveEventBtn').textContent=dirty?'● Salva':'⇩ Salva'}
 document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>showView(b.dataset.view));
-$('newEventBtn').onclick=()=>openAccess('new');$('openEventBtn').onclick=()=>openAccess('open');$('eventAccessConfirmBtn').onclick=async e=>{e.preventDefault();if(await confirmAccess())$('eventAccessDialog').close()};$('saveEventBtn').onclick=save;$('addDepartureBtn').onclick=()=>editDeparture();$('addTimelineBtn').onclick=()=>editTimeline();$('addOfficialBtn').onclick=()=>editOfficial();$('addRoleCategoryBtn').onclick=()=>{state.roleCategories.push({id:uid(),name:'Nuova categoria',roles:[]});mark();renderRoles()};$('editSaveBtn').onclick=e=>{e.preventDefault();saveEdit();$('editDialog').close()};$('addChecklistBtn').onclick=addChecklist;$('checklistInput').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addChecklist()}};$('pdfBtn').onclick=pdf;$('closePdfBtn').onclick=()=>$('pdfDialog').close();$('printPdfBtn').onclick=()=>$('pdfFrame').contentWindow.print();render();if(!config.token)status('Premi Nuovo o Apri e inserisci codice evento e token API GitHub.');
+$('newEventBtn').onclick=()=>openAccess('new');$('openEventBtn').onclick=()=>openAccess('open');$('eventAccessConfirmBtn').onclick=async e=>{e.preventDefault();if(await confirmAccess())$('eventAccessDialog').close()};$('saveEventBtn').onclick=save;$('addDepartureBtn').onclick=()=>editDeparture();$('addTimelineBtn').onclick=()=>editTimeline();$('addOfficialBtn').onclick=()=>editOfficial();$('addRoleCategoryBtn').onclick=()=>{state.roleCategories.push({id:uid(),name:'Nuova categoria',roles:[]});mark();renderRoles()};$('editSaveBtn').onclick=e=>{e.preventDefault();saveEdit();$('editDialog').close()};$('addChecklistBtn').onclick=addChecklist;$('checklistInput').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();addChecklist()}};$('pdfBtn').onclick=()=>{preparePrintPreview(false);pdf()};$('summaryPdfBtn').onclick=summaryPdf;$('closePdfBtn').onclick=()=>$('pdfDialog').close();$('printPdfBtn').onclick=()=>{const frame=$('pdfFrame').contentWindow;frame.focus();frame.print()};render();if(!config.token)status('Premi Nuovo o Apri e inserisci codice evento e token API GitHub.');
 })();
