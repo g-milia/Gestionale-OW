@@ -51,12 +51,7 @@
         };
       });
 
-      return {
-        ...category,
-        id: uid(),
-        subcategories,
-        roles
-      };
+      return { ...category, id: uid(), subcategories, roles };
     });
 
     return copy;
@@ -79,24 +74,14 @@
     const button = $('confirmCopyEventBtn');
 
     errorBox.textContent = '';
-    if (!sourceCode) {
-      errorBox.textContent = 'Evento origine non valido.';
-      return;
-    }
-    if (!targetCode) {
-      errorBox.textContent = 'Inserisci un nuovo codice evento.';
-      return;
-    }
-    if (targetCode.toLowerCase() === sourceCode.toLowerCase()) {
-      errorBox.textContent = 'Il nuovo codice deve essere diverso dall’evento origine.';
-      return;
-    }
+    if (!sourceCode) return errorBox.textContent = 'Evento origine non valido.';
+    if (!targetCode) return errorBox.textContent = 'Inserisci un nuovo codice evento.';
+    if (targetCode.toLowerCase() === sourceCode.toLowerCase()) return errorBox.textContent = 'Il nuovo codice deve essere diverso dall’evento origine.';
 
     button.disabled = true;
     button.textContent = 'Copia in corso…';
     try {
-      const existing = await OWDatabase.getEvent(targetCode);
-      if (existing) {
+      if (await OWDatabase.getEvent(targetCode)) {
         errorBox.textContent = 'Esiste già un evento con questo codice.';
         return;
       }
@@ -117,7 +102,7 @@
 
       setTimeout(() => {
         const statusNode = $('status');
-        if (statusNode) statusNode.textContent = `Evento ${targetCode} copiato con successo.`;
+        if (statusNode) textStatus(statusNode, `Evento ${targetCode} copiato con successo.`);
       }, 50);
     } catch (error) {
       errorBox.textContent = error.message || 'Errore durante la copia dell’evento.';
@@ -125,6 +110,11 @@
       button.disabled = false;
       button.textContent = 'Crea copia';
     }
+  }
+
+  function textStatus(node, text) {
+    node.textContent = text;
+    node.style.color = 'var(--muted)';
   }
 
   function addCopyButtonsToCards() {
@@ -144,8 +134,17 @@
     });
   }
 
-  const observer = new MutationObserver(addCopyButtonsToCards);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  function syncHeaderCopyButton() {
+    const editorVisible = !$('editorView').classList.contains('hidden');
+    const currentCode = $('eventCode').value.trim();
+    $('copyEventBtn').classList.toggle('hidden', !(editorVisible && currentCode));
+  }
+
+  const observer = new MutationObserver(() => {
+    addCopyButtonsToCards();
+    syncHeaderCopyButton();
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
 
   $('copyEventBtn').onclick = () => {
     const currentCode = $('eventCode').value.trim();
@@ -154,4 +153,5 @@
   $('confirmCopyEventBtn').onclick = createCopy;
 
   addCopyButtonsToCards();
+  syncHeaderCopyButton();
 })();
