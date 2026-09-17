@@ -1,0 +1,77 @@
+-- Import iniziale evento esistente da events/WPS-OW-CUP-Sardinia-2026.json
+-- Il payload usa la stessa struttura v4 del frontend attuale.
+
+select public.save_event($event$
+{
+  "version": 4,
+  "id": "WPS-OW-CUP-Sardinia-2026",
+  "createdAt": "2026-09-16T06:58:39.830Z",
+  "savedAt": "2026-09-17T09:49:31.979Z",
+  "roleSubcategoriesEnabled": false,
+  "event": {
+    "name": "WPS-OW-CUP-Sardinia-2026",
+    "date": "2026-09-19",
+    "venue": "Lido S.Giovanni - Alghero",
+    "notes": "Categorie S3-S6 1,5 km\nCategorie S7-S10 + S11-S14 3,0 Km\n\nPresente il Technical Delegate: Daniele Rocchi",
+    "pathNotes": "Circuito da percorrere in senso antiorario con 4 boe obbligatorie - 1.5 km Categorie S3-S6;\n\nCircuito da percorrere in senso antiorario con 4 boe obbligatorie x 2 - 3.0 km Categorie S7-S10 + S11-S14",
+    "athleteTotal": 35,
+    "athleteDescription": "10 atleti (6M+4F) 1.5 km Categorie S3-S6;\n25 atleti (13M+12F) 3.0 km Categorie S7-S10 + S11-S14",
+    "athleteDepartures": [
+      {"id":"d5pnuuxx0nmmu3r8u2y","name":"S3-S6","time":"10:00","athletes":10,"numbers":"","notes":"Tempo limite 60minuti (?) ore 11:00"},
+      {"id":"tqxhfv9rv2mu3rad1t","name":"S7-S10+S11-S14","time":"11:00","athletes":25,"numbers":"","notes":"Tempo limite 90minuti (?) ore 12:30"}
+    ]
+  },
+  "timeline": [
+    {"id":"jnyo3x33rgmu4fsydu","time":"08:00","title":"Riunione Giuria","place":"","notes":""},
+    {"id":"plr0hlqia5cmu4ftd6d","time":"08:00","title":"Controllo percorso","place":"","notes":""},
+    {"id":"ec8g58iy5kmu4fub5s","time":"08:30","title":"Identificazione atleti","place":"","notes":"l'identificazione sarà unica per la gara della 1.5 km e per la gara 3.0 km quindi proseguirà anche oltre le 9.30 (UG che proseguirà con l'identificazione atleti della 3.0 km dopo la partenza della 1.5 km Ansaldi Nicola)"},
+    {"id":"9ljsdulv2lcmu4fxcqw","time":"09:30","title":"Briefing atleti 1.5 km","place":"","notes":""},
+    {"id":"m2ytq6uwtvlmu4fxtev","time":"09:40","title":"Imbarco giudici","place":"","notes":""},
+    {"id":"f4itpiqkaa5mu4fyegr","time":"09:45","title":"Chiamata atleti 1.5 km","place":"","notes":""},
+    {"id":"h9iabsn2155mu4fzjdn","time":"10:00","title":"Partenza 1.5 km","place":"","notes":""},
+    {"id":"dp7oubx80pqmu4fzv8j","time":"10:40","title":"Briefing atleti 3.0 km","place":"","notes":""},
+    {"id":"5qrm5jof47wmu4g0gqa","time":"10:55","title":"Chiamata atleti 3.0 km ","place":"","notes":"Reimbarco GA (da verificare)"},
+    {"id":"9pwug4uo5ljmu4g0vx9","time":"11:00","title":"Partenza atleti 3.0 km","place":"","notes":""},
+    {"id":"xwkfca3uqfcmu4g24yd","time":"13:00","title":"Cerimonia premiazioni","place":"","notes":""}
+  ],
+  "officials": [
+    {"id":"rxerj64f4imu3rbfk9","name":"Alessandro Tangolo","notes":"Giudice Arbitro"},
+    {"id":"cwuuxry817umu3rbt2h","name":"Marta Melis","notes":"Assistant"},
+    {"id":"2hsqotmv05umu3rbycg","name":"Emanuele Alfano","notes":""},
+    {"id":"hb02hyh2vxvmu3rc4g8","name":"Emilia Fois","notes":""},
+    {"id":"au8j1onhkvjmu3rceio","name":"Assunta Mostallino","notes":""},
+    {"id":"0l9mdqp0p7vmu3rcs9s","name":"Antonella Garau","notes":""},
+    {"id":"l21wegjye6hmu3rcycv","name":"Alessandra Canu","notes":""},
+    {"id":"ypcbpi6y76mu3rd3zb","name":"Nicola Ansaldi","notes":""},
+    {"id":"pgskjcz20ymu3rd9iw","name":"Julia Nuzum","notes":""},
+    {"id":"zu7pk57v2tkmu4b292b","name":"Daniele Rocchi","notes":"Technical Delegate"}
+  ],
+  "roleCategories": [
+    {"id":"wu86fbfh5cmu3rdyz4","name":"Preparazione ","roles":[
+      {"id":"9p350l8rp0nmu4ayzko","name":"Verifica costumi e attrezzatura","officialIds":["2hsqotmv05umu3rbycg","au8j1onhkvjmu3rceio"],"officialIdsBySubcategory":{}},
+      {"id":"mcnymuskq1bmu4ayxui","name":"Riconoscimento atleti ","officialIds":["pgskjcz20ymu3rd9iw","ypcbpi6y76mu3rd3zb"],"officialIdsBySubcategory":{}},
+      {"id":"9r50q9dw91wmu3rfvrr","name":"Punzonatura","officialIds":["cwuuxry817umu3rbt2h","hb02hyh2vxvmu3rc4g8","0l9mdqp0p7vmu3rcs9s","l21wegjye6hmu3rcycv"],"officialIdsBySubcategory":{}},
+      {"id":"2agh4gskhenmu3rj1w5","name":"Verifica percorso e temperatura","officialIds":["zu7pk57v2tkmu4b292b","cwuuxry817umu3rbt2h"],"officialIdsBySubcategory":{}},
+      {"id":"devz6jktx8qmu3rjf51","name":"Consegna Transponder - Ritiro tesserini (Riconsegna)","officialIds":["ypcbpi6y76mu3rd3zb"],"officialIdsBySubcategory":{}},
+      {"id":"43bmb1q46ximu3rsek9","name":"Appello (Recorder) ","officialIds":["l21wegjye6hmu3rcycv"],"officialIdsBySubcategory":{}}
+    ],"subcategories":[]},
+    {"id":"hokau4uc0mhmu3rfbxb","name":"Giudici percorso ","roles":[
+      {"id":"gyjy3qb68tmu3rfsaf","name":"Giudice Arbitro","officialIds":["rxerj64f4imu3rbfk9"],"officialIdsBySubcategory":{}},
+      {"id":"c6dwntqubtmu3rl7es","name":"Technical Delegate - WPS","officialIds":["zu7pk57v2tkmu4b292b"],"officialIdsBySubcategory":{}},
+      {"id":"mcwxl3opvzmu3rlelg","name":"Percorso 1","officialIds":["cwuuxry817umu3rbt2h"],"officialIdsBySubcategory":{}},
+      {"id":"z2titwsjx4mu3rm1b8","name":"Percorso 2","officialIds":["2hsqotmv05umu3rbycg"],"officialIdsBySubcategory":{}},
+      {"id":"y4xh0u9mudomu3rmzks","name":"Percorso 3","officialIds":["hb02hyh2vxvmu3rc4g8"],"officialIdsBySubcategory":{}},
+      {"id":"2q4tjsknjunmu4bc7i3","name":"Percorso 4","officialIds":["0l9mdqp0p7vmu3rcs9s"],"officialIdsBySubcategory":{}}
+    ],"subcategories":[]},
+    {"id":"cru2rc6m9itmu3rnm4r","name":"Partenze","roles":[
+      {"id":"qleog1zemgqmu3rns7f","name":"Partenza 1","officialIds":["rxerj64f4imu3rbfk9","2hsqotmv05umu3rbycg"],"officialIdsBySubcategory":{}},
+      {"id":"djqgp0io548mu3ro7ej","name":"Partenza 2 ","officialIds":["rxerj64f4imu3rbfk9","2hsqotmv05umu3rbycg"],"officialIdsBySubcategory":{}}
+    ],"subcategories":[]},
+    {"id":"ibwpdrhgoumu3roiub","name":"Arrivi","roles":[
+      {"id":"bo8f5zcg64imu3ronej","name":"Coppia 1","officialIds":["au8j1onhkvjmu3rceio","pgskjcz20ymu3rd9iw"],"officialIdsBySubcategory":{}},
+      {"id":"kaqlottp5upmu4fs2du","name":"Riconsegna tesserini","officialIds":["ypcbpi6y76mu3rd3zb"],"officialIdsBySubcategory":{}}
+    ],"subcategories":[]}
+  ],
+  "refereeNotes": {"briefingAthletes":"","briefingJury":"","checklist":[]}
+}
+$event$::jsonb);
