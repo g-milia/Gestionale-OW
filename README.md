@@ -1,20 +1,30 @@
 # Gestionale OW
 
-Gestionale statico per GitHub Pages.
+Gestionale per eventi Open Water pubblicato tramite GitHub Pages, con autenticazione e persistenza su Supabase.
 
-## Struttura
+## Applicazione principale
 
-- `index.html`: interfaccia
-- `css/style.css`: stile
-- `js/app.js`: logica gestionale
-- `js/github.js`: chiamate GitHub API
-- `js/storage.js`: configurazione browser
-- `js/ui.js`: helper UI
-- `events/`: un JSON per evento
+La versione pubblicata dalla root del repository usa esclusivamente Supabase:
 
-## Uso
+- `index.html`: interfaccia principale e homepage eventi
+- `css/`: stile e layout di stampa
+- `js/auth.js`: autenticazione Supabase
+- `js/database.js`: client RPC del backend
+- `js/app-v2.js`: logica gestionale
+- `js/copy-event.js`: clonazione eventi
+- `js/import-export.js`: import/export JSON
+- `js/ui.js`: helper UI e stampa sintetica
+- `supabase/`: schema, migrazioni e API del backend
 
-Aprire la pagina, configurare owner/repository/branch e inserire un token GitHub con permesso `Contents: Read and write`. Il token viene conservato solo in `sessionStorage`. Gli eventi vengono salvati in `events/<codice>.json` e aperti tramite codice + secret.
+Gli eventi sono identificati internamente tramite UUID e non richiedono un codice visibile all'utente.
+
+## Archivio versione GitHub
+
+La precedente versione completa, che salvava gli eventi come JSON nel repository e usava un token GitHub dal browser, e conservata in:
+
+`archive/github-full/`
+
+L'archivio non e usato dall'applicazione principale e rimane disponibile solo come riferimento storico.
 
 ## GitHub Pages
 
