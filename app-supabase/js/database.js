@@ -34,6 +34,9 @@
     async saveEvent(event) {
       return fromApi(await rpc('save_event_v2', { p_event: toApi(event) }));
     },
+    async importEvent(event) {
+      return fromApi(await rpc('import_event_v2', { p_event: toApi(event) }));
+    },
     deleteEvent: eventId => rpc('delete_event_v2', { p_event_id: eventId })
   };
 })();
