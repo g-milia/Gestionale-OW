@@ -56,7 +56,6 @@
       <section class="view" id="view-evento">
         <div class="section-head"><div><h2>Dati evento</h2><div class="muted">Dati salvati su Supabase.</div></div></div>
         <div class="card grid">
-          <label>Codice evento<input id="eventCode" disabled></label>
           <label>Nome evento<input id="eventName"></label>
           <label>Data<input id="eventDate" type="date"></label>
           <label>Luogo / impianto<input id="eventVenue"></label>
@@ -77,17 +76,17 @@
     </main>
   </div>
 
-  <dialog id="newEventDialog"><form method="dialog"><div class="modal-head"><h2>Nuovo evento</h2><button value="cancel">×</button></div><div class="modal-body grid"><label>Codice evento<input id="newEventCode" placeholder="OW-2026-001"></label><label>Nome evento<input id="newEventName" placeholder="Nuova gara di nuoto"></label><div class="wide error" id="newEventError"></div></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="createEventBtn" class="primary" value="default">Crea</button></div></form></dialog>
-  <dialog id="copyEventDialog"><form method="dialog"><div class="modal-head"><div><h2>Copia evento</h2><div class="muted">Crea un nuovo evento duplicando tutti i dati, UG, ruoli, assegnazioni, timeline e note.</div></div><button value="cancel">×</button></div><div class="modal-body grid"><label>Evento origine<input id="copySourceCode" disabled></label><label>Nuovo codice evento<input id="copyEventCode" placeholder="OW-2026-001-COPIA"></label><label class="wide">Nome nuovo evento<input id="copyEventName" placeholder="Nome evento"></label><div class="wide error" id="copyEventError"></div></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="confirmCopyEventBtn" class="primary" value="default">Crea copia</button></div></form></dialog>
+  <dialog id="newEventDialog"><form method="dialog"><div class="modal-head"><h2>Nuovo evento</h2><button value="cancel">×</button></div><div class="modal-body grid"><label class="wide">Nome evento<input id="newEventName" placeholder="Nuova gara di nuoto"></label><div class="wide error" id="newEventError"></div></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="createEventBtn" class="primary" value="default">Crea</button></div></form></dialog>
+  <dialog id="copyEventDialog"><form method="dialog"><div class="modal-head"><div><h2>Copia evento</h2><div class="muted">Crea un nuovo evento duplicando tutti i dati, UG, ruoli, assegnazioni, timeline e note.</div></div><button value="cancel">×</button></div><div class="modal-body grid"><label class="wide">Evento origine<input id="copySourceName" disabled></label><label class="wide">Nome nuovo evento<input id="copyEventName" placeholder="Nome evento"></label><div class="wide error" id="copyEventError"></div></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="confirmCopyEventBtn" class="primary" value="default">Crea copia</button></div></form></dialog>
   <dialog id="editDialog"><form method="dialog"><div class="modal-head"><h2 id="editTitle">Modifica</h2><button value="cancel">×</button></div><div id="editFields" class="modal-body grid"></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="editSaveBtn" class="primary" value="default">Salva</button></div></form></dialog>
   <dialog id="pdfDialog"><div class="modal-head"><h2>Anteprima</h2><button id="closePdfBtn">×</button></div><iframe id="pdfFrame" title="Anteprima"></iframe><p id="summaryPrintHint" class="muted modal-body" hidden>Formato consigliato: A4 verticale, scala 100%, intestazioni e piè di pagina del browser disattivati. I contenuti lunghi proseguono su più pagine.</p><div class="modal-foot"><button id="printPdfBtn" class="primary">Stampa / PDF</button></div></dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js?v=20260917-align-1"></script>
-  <script src="js/auth.js?v=20260917-align-1"></script>
-  <script src="js/database.js?v=20260917-align-1"></script>
-  <script src="js/ui.js?v=20260917-align-1"></script>
-  <script src="js/app-v2.js?v=20260917-copy-1"></script>
-  <script src="js/copy-event.js?v=20260917-copy-1"></script>
+  <script src="js/config.js?v=20260917-uuid-1"></script>
+  <script src="js/auth.js?v=20260917-uuid-1"></script>
+  <script src="js/database.js?v=20260917-uuid-1"></script>
+  <script src="js/ui.js?v=20260917-uuid-1"></script>
+  <script src="js/app-v2.js?v=20260917-uuid-1"></script>
+  <script src="js/copy-event.js?v=20260917-uuid-1"></script>
 </body>
 </html>
