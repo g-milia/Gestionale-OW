@@ -1,8 +1,9 @@
 {
-  "version": 3,
+  "version": 4,
   "id": "WPS-OW-CUP-Sardinia-2026",
   "createdAt": "2026-09-16T06:58:39.830Z",
-  "savedAt": "2026-09-16T20:57:05.597Z",
+  "savedAt": "2026-09-17T09:49:31.979Z",
+  "roleSubcategoriesEnabled": false,
   "event": {
     "name": "WPS-OW-CUP-Sardinia-2026",
     "date": "2026-09-19",
@@ -172,7 +173,8 @@
           "officialIds": [
             "2hsqotmv05umu3rbycg",
             "au8j1onhkvjmu3rceio"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "mcnymuskq1bmu4ayxui",
@@ -180,7 +182,8 @@
           "officialIds": [
             "pgskjcz20ymu3rd9iw",
             "ypcbpi6y76mu3rd3zb"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "9r50q9dw91wmu3rfvrr",
@@ -190,30 +193,36 @@
             "hb02hyh2vxvmu3rc4g8",
             "0l9mdqp0p7vmu3rcs9s",
             "l21wegjye6hmu3rcycv"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "2agh4gskhenmu3rj1w5",
           "name": "Verifica percorso e temperatura",
           "officialIds": [
+            "zu7pk57v2tkmu4b292b",
             "cwuuxry817umu3rbt2h"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "devz6jktx8qmu3rjf51",
           "name": "Consegna Transponder - Ritiro tesserini (Riconsegna)",
           "officialIds": [
             "ypcbpi6y76mu3rd3zb"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "43bmb1q46ximu3rsek9",
           "name": "Appello (Recorder) ",
           "officialIds": [
             "l21wegjye6hmu3rcycv"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         }
-      ]
+      ],
+      "subcategories": []
     },
     {
       "id": "hokau4uc0mhmu3rfbxb",
@@ -224,44 +233,51 @@
           "name": "Giudice Arbitro",
           "officialIds": [
             "rxerj64f4imu3rbfk9"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "c6dwntqubtmu3rl7es",
           "name": "Technical Delegate - WPS",
           "officialIds": [
             "zu7pk57v2tkmu4b292b"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "mcwxl3opvzmu3rlelg",
           "name": "Percorso 1",
           "officialIds": [
             "cwuuxry817umu3rbt2h"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "z2titwsjx4mu3rm1b8",
           "name": "Percorso 2",
           "officialIds": [
             "2hsqotmv05umu3rbycg"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "y4xh0u9mudomu3rmzks",
           "name": "Percorso 3",
           "officialIds": [
             "hb02hyh2vxvmu3rc4g8"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "2q4tjsknjunmu4bc7i3",
           "name": "Percorso 4",
           "officialIds": [
             "0l9mdqp0p7vmu3rcs9s"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         }
-      ]
+      ],
+      "subcategories": []
     },
     {
       "id": "cru2rc6m9itmu3rnm4r",
@@ -273,7 +289,8 @@
           "officialIds": [
             "rxerj64f4imu3rbfk9",
             "2hsqotmv05umu3rbycg"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "djqgp0io548mu3ro7ej",
@@ -281,9 +298,11 @@
           "officialIds": [
             "rxerj64f4imu3rbfk9",
             "2hsqotmv05umu3rbycg"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         }
-      ]
+      ],
+      "subcategories": []
     },
     {
       "id": "ibwpdrhgoumu3roiub",
@@ -295,16 +314,19 @@
           "officialIds": [
             "au8j1onhkvjmu3rceio",
             "pgskjcz20ymu3rd9iw"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         },
         {
           "id": "kaqlottp5upmu4fs2du",
           "name": "Riconsegna tesserini",
           "officialIds": [
             "ypcbpi6y76mu3rd3zb"
-          ]
+          ],
+          "officialIdsBySubcategory": {}
         }
-      ]
+      ],
+      "subcategories": []
     }
   ],
   "refereeNotes": {
