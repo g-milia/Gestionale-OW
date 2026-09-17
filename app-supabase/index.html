@@ -31,6 +31,7 @@
         <span class="badge connected" id="userBadge"></span>
         <button id="homeBtn" class="hidden">← Eventi</button>
         <button id="newEventBtn">＋ Nuovo</button>
+        <button id="copyEventBtn" class="hidden">⧉ Copia</button>
         <button id="pdfBtn" class="hidden">Anteprima PDF</button>
         <button id="summaryPdfBtn" class="hidden" type="button">Stampa sintetica</button>
         <button id="saveEventBtn" class="primary hidden">⇩ Salva</button>
@@ -77,6 +78,7 @@
   </div>
 
   <dialog id="newEventDialog"><form method="dialog"><div class="modal-head"><h2>Nuovo evento</h2><button value="cancel">×</button></div><div class="modal-body grid"><label>Codice evento<input id="newEventCode" placeholder="OW-2026-001"></label><label>Nome evento<input id="newEventName" placeholder="Nuova gara di nuoto"></label><div class="wide error" id="newEventError"></div></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="createEventBtn" class="primary" value="default">Crea</button></div></form></dialog>
+  <dialog id="copyEventDialog"><form method="dialog"><div class="modal-head"><div><h2>Copia evento</h2><div class="muted">Crea un nuovo evento duplicando tutti i dati, UG, ruoli, assegnazioni, timeline e note.</div></div><button value="cancel">×</button></div><div class="modal-body grid"><label>Evento origine<input id="copySourceCode" disabled></label><label>Nuovo codice evento<input id="copyEventCode" placeholder="OW-2026-001-COPIA"></label><label class="wide">Nome nuovo evento<input id="copyEventName" placeholder="Nome evento"></label><div class="wide error" id="copyEventError"></div></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="confirmCopyEventBtn" class="primary" value="default">Crea copia</button></div></form></dialog>
   <dialog id="editDialog"><form method="dialog"><div class="modal-head"><h2 id="editTitle">Modifica</h2><button value="cancel">×</button></div><div id="editFields" class="modal-body grid"></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="editSaveBtn" class="primary" value="default">Salva</button></div></form></dialog>
   <dialog id="pdfDialog"><div class="modal-head"><h2>Anteprima</h2><button id="closePdfBtn">×</button></div><iframe id="pdfFrame" title="Anteprima"></iframe><p id="summaryPrintHint" class="muted modal-body" hidden>Formato consigliato: A4 verticale, scala 100%, intestazioni e piè di pagina del browser disattivati. I contenuti lunghi proseguono su più pagine.</p><div class="modal-foot"><button id="printPdfBtn" class="primary">Stampa / PDF</button></div></dialog>
 
@@ -85,6 +87,6 @@
   <script src="js/auth.js?v=20260917-align-1"></script>
   <script src="js/database.js?v=20260917-align-1"></script>
   <script src="js/ui.js?v=20260917-align-1"></script>
-  <script src="js/app-v2.js?v=20260917-align-1"></script>
+  <script src="js/app-v2.js?v=20260917-copy-1"></script>
 </body>
 </html>
