@@ -1,19 +1,18 @@
 (() => {
   const $ = id => document.getElementById(id);
   const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
-  const sanitizeCode = value => String(value || '').trim().replace(/[^A-Za-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
 
-  let sourceCode = '';
+  let sourceEventId = '';
 
-  function remapEventIds(source, targetCode, targetName) {
+  function remapEventIds(source, targetName) {
     const copy = structuredClone(source);
     const now = new Date().toISOString();
 
-    copy.id = targetCode;
+    copy.id = '';
     copy.createdAt = now;
     copy.savedAt = now;
     copy.event = copy.event || {};
-    copy.event.name = targetName || copy.event.name || 'Nuova gara di nuoto';
+    copy.event.name = targetName || `${copy.event.name || 'Nuova gara di nuoto'} - Copia`;
 
     copy.event.athleteDepartures = (copy.event.athleteDepartures || []).map(item => ({ ...item, id: uid() }));
     copy.timeline = (copy.timeline || []).map(item => ({ ...item, id: uid() }));
@@ -57,53 +56,40 @@
     return copy;
   }
 
-  function openDialog(code) {
-    sourceCode = code;
-    $('copySourceCode').value = code;
-    $('copyEventCode').value = `${code}-COPIA`;
-    $('copyEventName').value = '';
+  async function openDialog(eventId) {
+    sourceEventId = eventId;
     $('copyEventError').textContent = '';
-    $('copyEventDialog').showModal();
+    $('copyEventName').value = '';
+    try {
+      const source = await OWDatabase.getEvent(eventId);
+      $('copySourceName').value = source?.event?.name || 'Evento';
+      $('copyEventName').value = `${source?.event?.name || 'Evento'} - Copia`;
+      $('copyEventDialog').showModal();
+    } catch (error) {
+      const statusNode = $('status');
+      if (statusNode) statusNode.textContent = error.message || 'Impossibile aprire la copia evento.';
+    }
   }
 
   async function createCopy(event) {
     event.preventDefault();
-    const targetCode = sanitizeCode($('copyEventCode').value);
     const targetName = $('copyEventName').value.trim();
     const errorBox = $('copyEventError');
     const button = $('confirmCopyEventBtn');
 
     errorBox.textContent = '';
-    if (!sourceCode) return errorBox.textContent = 'Evento origine non valido.';
-    if (!targetCode) return errorBox.textContent = 'Inserisci un nuovo codice evento.';
-    if (targetCode.toLowerCase() === sourceCode.toLowerCase()) return errorBox.textContent = 'Il nuovo codice deve essere diverso dall’evento origine.';
+    if (!sourceEventId) return errorBox.textContent = 'Evento origine non valido.';
+    if (!targetName) return errorBox.textContent = 'Inserisci il nome del nuovo evento.';
 
     button.disabled = true;
     button.textContent = 'Copia in corso…';
     try {
-      if (await OWDatabase.getEvent(targetCode)) {
-        errorBox.textContent = 'Esiste già un evento con questo codice.';
-        return;
-      }
+      const source = await OWDatabase.getEvent(sourceEventId);
+      if (!source) return errorBox.textContent = 'Evento origine non trovato.';
 
-      const source = await OWDatabase.getEvent(sourceCode);
-      if (!source) {
-        errorBox.textContent = 'Evento origine non trovato.';
-        return;
-      }
-
-      const payload = remapEventIds(source, targetCode, targetName || `${source.event?.name || sourceCode} - Copia`);
-      await OWDatabase.saveEvent(payload);
+      const saved = await OWDatabase.saveEvent(remapEventIds(source, targetName));
       $('copyEventDialog').close();
-
-      const homeButton = $('homeBtn');
-      if (homeButton && !homeButton.classList.contains('hidden')) homeButton.click();
-      else $('refreshBtn')?.click();
-
-      setTimeout(() => {
-        const statusNode = $('status');
-        if (statusNode) textStatus(statusNode, `Evento ${targetCode} copiato con successo.`);
-      }, 50);
+      await OWApp.openEvent(saved.id);
     } catch (error) {
       errorBox.textContent = error.message || 'Errore durante la copia dell’evento.';
     } finally {
@@ -112,46 +98,29 @@
     }
   }
 
-  function textStatus(node, text) {
-    node.textContent = text;
-    node.style.color = 'var(--muted)';
-  }
-
   function addCopyButtonsToCards() {
     document.querySelectorAll('#eventList .event-card').forEach(card => {
       const actions = card.querySelector('.event-actions');
-      const meta = card.querySelector('.event-meta');
-      if (!actions || !meta || actions.querySelector('.copy')) return;
-      const code = meta.textContent.trim();
-      if (!code) return;
+      const eventId = card.dataset.eventId;
+      if (!actions || !eventId || actions.querySelector('.copy')) return;
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'copy';
       button.textContent = 'Copia';
-      button.onclick = () => openDialog(code);
+      button.onclick = () => openDialog(eventId);
       const deleteButton = actions.querySelector('.delete');
       actions.insertBefore(button, deleteButton || null);
     });
   }
 
-  function syncHeaderCopyButton() {
-    const editorVisible = !$('editorView').classList.contains('hidden');
-    const currentCode = $('eventCode').value.trim();
-    $('copyEventBtn').classList.toggle('hidden', !(editorVisible && currentCode));
-  }
-
-  const observer = new MutationObserver(() => {
-    addCopyButtonsToCards();
-    syncHeaderCopyButton();
-  });
-  observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  const observer = new MutationObserver(addCopyButtonsToCards);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
 
   $('copyEventBtn').onclick = () => {
-    const currentCode = $('eventCode').value.trim();
-    if (currentCode) openDialog(currentCode);
+    const eventId = OWApp.getCurrentEventId();
+    if (eventId) openDialog(eventId);
   };
   $('confirmCopyEventBtn').onclick = createCopy;
 
   addCopyButtonsToCards();
-  syncHeaderCopyButton();
 })();
