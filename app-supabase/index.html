@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Gestionale OW · Supabase</title>
-  <link rel="stylesheet" href="css/style.css?v=20260917-1">
+  <link rel="stylesheet" href="css/style.css?v=20260917-align-1">
+  <link rel="stylesheet" href="css/supabase.css?v=20260917-align-1">
 </head>
 <body>
   <div id="loginView" class="login-wrap hidden">
@@ -29,7 +30,10 @@
       <div class="actions">
         <span class="badge connected" id="userBadge"></span>
         <button id="homeBtn" class="hidden">← Eventi</button>
-        <button id="newEventBtn" class="primary">＋ Nuovo evento</button>
+        <button id="newEventBtn">＋ Nuovo</button>
+        <button id="pdfBtn" class="hidden">Anteprima PDF</button>
+        <button id="summaryPdfBtn" class="hidden" type="button">Stampa sintetica</button>
+        <button id="saveEventBtn" class="primary hidden">⇩ Salva</button>
         <button id="logoutBtn">Esci</button>
       </div>
     </header>
@@ -49,7 +53,7 @@
       </nav>
 
       <section class="view" id="view-evento">
-        <div class="section-head"><div><h2>Dati evento</h2><div class="muted">Dati salvati su Supabase.</div></div><button id="saveEventBtn" class="primary">⇩ Salva</button></div>
+        <div class="section-head"><div><h2>Dati evento</h2><div class="muted">Dati salvati su Supabase.</div></div></div>
         <div class="card grid">
           <label>Codice evento<input id="eventCode" disabled></label>
           <label>Nome evento<input id="eventName"></label>
@@ -60,23 +64,27 @@
           <label>Totale atleti<input id="athleteTotal" type="number" min="0"></label>
           <label class="wide">Note atleti<textarea id="athleteDescription"></textarea></label>
         </div>
-        <div class="section-head"><div><h2>Partenze</h2></div><button id="addDepartureBtn" class="primary">＋ Partenza</button></div><div class="card"><div id="departureList" class="list"></div></div>
-        <div class="section-head"><div><h2>Timeline</h2></div><button id="addTimelineBtn" class="primary">＋ Fase</button></div><div class="card"><div id="timelineList" class="list"></div></div>
+        <div class="section-head"><div><h2>Partenze</h2><div class="muted">Riepilogo operativo degli atleti per partenza.</div></div><button id="addDepartureBtn" class="primary">＋ Partenza</button></div>
+        <div class="card"><div id="departureList" class="list"></div></div>
+        <div class="section-head"><div><h2>Timeline</h2><div class="muted">Fasi, orari, luoghi e note.</div></div><button id="addTimelineBtn" class="primary">＋ Fase</button></div>
+        <div class="card"><div id="timelineList" class="list"></div></div>
       </section>
 
-      <section class="view hidden" id="view-ug"><div class="section-head"><div><h2>Ufficiali Gara</h2></div><button id="addOfficialBtn" class="primary">＋ UG</button></div><div class="card"><div id="officialList" class="list"></div></div></section>
-      <section class="view hidden" id="view-ruoli"><div class="section-head"><div><h2>Ruoli</h2></div><button id="addRoleCategoryBtn" class="primary">＋ Categoria</button></div><div id="roleCategoryList" class="list"></div></section>
-      <section class="view hidden" id="view-note"><div class="section-head"><div><h2>Note Arbitro</h2></div></div><div class="card grid"><label class="wide">Briefing Atleti<textarea id="briefingAthletes"></textarea></label><label class="wide">Briefing Giuria<textarea id="briefingJury"></textarea></label><div class="wide inline"><input id="checklistInput" placeholder="Nuova voce checklist"><button id="addChecklistBtn" class="primary">＋ Aggiungi</button></div><div class="wide" id="checklistBox"></div></div></section>
+      <section class="view hidden" id="view-ug"><div class="section-head"><div><h2>Ufficiali Gara</h2><div class="muted">Elenco UG e note.</div></div><button id="addOfficialBtn" class="primary">＋ UG</button></div><div class="card"><div id="officialList" class="list"></div></div></section>
+      <section class="view hidden" id="view-ruoli"><div class="section-head"><div><h2>Ruoli</h2><div class="muted">Categorie, ruoli e assegnazioni UG.</div></div><button id="addRoleCategoryBtn" class="primary">＋ Categoria</button></div><div id="roleCategoryList" class="list"></div></section>
+      <section class="view hidden" id="view-note"><div class="section-head"><div><h2>Note Arbitro</h2><div class="muted">Briefing e checklist operativa.</div></div></div><div class="card grid"><label class="wide">Briefing Atleti<textarea id="briefingAthletes"></textarea></label><label class="wide">Briefing Giuria<textarea id="briefingJury"></textarea></label><div class="wide inline"><input id="checklistInput" placeholder="Nuova voce checklist"><button id="addChecklistBtn" class="primary">＋ Aggiungi</button></div><div class="wide" id="checklistBox"></div></div></section>
     </main>
   </div>
 
   <dialog id="newEventDialog"><form method="dialog"><div class="modal-head"><h2>Nuovo evento</h2><button value="cancel">×</button></div><div class="modal-body grid"><label>Codice evento<input id="newEventCode" placeholder="OW-2026-001"></label><label>Nome evento<input id="newEventName" placeholder="Nuova gara di nuoto"></label><div class="wide error" id="newEventError"></div></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="createEventBtn" class="primary" value="default">Crea</button></div></form></dialog>
   <dialog id="editDialog"><form method="dialog"><div class="modal-head"><h2 id="editTitle">Modifica</h2><button value="cancel">×</button></div><div id="editFields" class="modal-body grid"></div><div class="modal-foot"><button value="cancel">Annulla</button><button id="editSaveBtn" class="primary" value="default">Salva</button></div></form></dialog>
+  <dialog id="pdfDialog"><div class="modal-head"><h2>Anteprima</h2><button id="closePdfBtn">×</button></div><iframe id="pdfFrame" title="Anteprima"></iframe><p id="summaryPrintHint" class="muted modal-body" hidden>Formato consigliato: A4 verticale, scala 100%, intestazioni e piè di pagina del browser disattivati. I contenuti lunghi proseguono su più pagine.</p><div class="modal-foot"><button id="printPdfBtn" class="primary">Stampa / PDF</button></div></dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/config.js?v=20260917-1"></script>
-  <script src="js/auth.js?v=20260917-1"></script>
-  <script src="js/database.js?v=20260917-1"></script>
-  <script src="js/app.js?v=20260917-1"></script>
+  <script src="js/config.js?v=20260917-align-1"></script>
+  <script src="js/auth.js?v=20260917-align-1"></script>
+  <script src="js/database.js?v=20260917-align-1"></script>
+  <script src="js/ui.js?v=20260917-align-1"></script>
+  <script src="js/app-v2.js?v=20260917-align-1"></script>
 </body>
 </html>
