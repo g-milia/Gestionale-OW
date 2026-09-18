@@ -62,7 +62,7 @@
       assignedOfficials: 'Assigned officials',
       briefing: 'Briefing',
       athleteBriefing: 'Athletes',
-      juryBriefing: 'Jury',
+      juryBriefing: 'Officials',
       courseNotes: 'Course notes',
       numbers: 'Numbers',
       notes: 'Notes',
