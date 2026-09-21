@@ -8,20 +8,21 @@ import ShieldRounded from '@mui/icons-material/ShieldRounded';
 import FactCheckRounded from '@mui/icons-material/FactCheckRounded';
 import LockRounded from '@mui/icons-material/LockRounded';
 import { useLocation, useNavigate } from 'react-router-dom';
+import type { ReactNode } from 'react';
 import type { EventAccess } from '../types';
 
 export default function EventSidebar({ eventId, eventName, access }: { eventId: string; eventName: string; access: EventAccess }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const items = [
+  const items: Array<[string, string, ReactNode]> = [
     ['general', 'Generali', <DescriptionRounded />],
     ['departures', 'Ondate', <WavesRounded />],
     ['timeline', 'Timeline', <ScheduleRounded />],
     ['officials', 'Ufficiali gara', <GroupsRounded />],
     ['roles', 'Ruoli', <ShieldRounded />],
     ['notes', 'Note e checklist', <FactCheckRounded />],
-  ] as const;
-  if (access.canManagePermissions) items.push(['permissions', 'Permessi', <LockRounded />] as any);
+  ];
+  if (access.canManagePermissions) items.push(['permissions', 'Permessi', <LockRounded />]);
 
   return (
     <Box className="event-sidebar">
