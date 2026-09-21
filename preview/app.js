@@ -488,10 +488,15 @@
       ['notes','Note','textarea']
     ], item, values => {
       Object.assign(item, values);
-      if (original) Object.assign(original,item);
-      else state.officials.push(item);
+      if (original) {
+        Object.assign(original,item);
+        selectedOfficialId = original.id;
+      } else {
+        state.officials.push(item);
+        selectedOfficialId = item.id;
+      }
       markDirty();
-      renderOfficialRows();
+      renderOfficials();
       setReadOnly();
     });
   }
