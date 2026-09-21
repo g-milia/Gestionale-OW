@@ -28,6 +28,7 @@
   let selectedRoleCategoryId = null;
   let selectedRoleId = null;
   let selectedRoleSubcategoryId = null;
+  let rolesViewMode = 'role';
 
   function toast(text, error) {
     const node = $('status');
@@ -426,7 +427,31 @@
     });
   }
 
+  function renderRolesViewSwitcher() {
+    return '<div class="roles-view-switcher">' +
+      '<div><h2>Gestione ruoli</h2><div class="row-muted">Scegli se lavorare per ruolo o controllare il carico di ogni ufficiale gara.</div></div>' +
+      '<div class="segmented-control">' +
+        '<button type="button" data-role-view="role" class="' + (rolesViewMode === 'role' ? 'active' : '') + '"><span class="material-symbols-rounded">shield_person</span>Per ruolo</button>' +
+        '<button type="button" data-role-view="official" class="' + (rolesViewMode === 'official' ? 'active' : '') + '"><span class="material-symbols-rounded">badge</span>Per UG</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function bindRolesViewSwitcher() {
+    document.querySelectorAll('[data-role-view]').forEach(button => {
+      button.onclick = () => {
+        rolesViewMode = button.dataset.roleView;
+        renderRoles();
+      };
+    });
+  }
+
   function renderRoles() {
+    if (rolesViewMode === 'official') {
+      renderRolesByOfficial();
+      return;
+    }
+
     const categories = state.roleCategories;
     if (!selectedRoleCategoryId || !categories.some(category => category.id === selectedRoleCategoryId)) {
       selectedRoleCategoryId = categories[0]?.id || null;
@@ -444,6 +469,7 @@
     }
 
     $('pageContent').innerHTML =
+      renderRolesViewSwitcher() +
       '<div class="role-workspace">' +
         '<section class="surface role-pane category-pane">' +
           '<div class="role-pane-head">' +
@@ -469,6 +495,8 @@
           '<div id="roleAssignmentEditor"></div>' +
         '</section>' +
       '</div>';
+
+    bindRolesViewSwitcher();
 
     $('addCategoryBtn').onclick = () => {
       const category = {id:uid(),name:'Nuova categoria',subcategories:[],roles:[]};
@@ -885,6 +913,161 @@
     renderRoleNavList();
     renderRoleAssignmentEditor();
     setReadOnly();
+  }
+
+
+  function buildOfficialRoleAssignments() {
+    const byOfficial = new Map(state.officials.map(official => [
+      official.id,
+      { official, assignments: [] }
+    ]));
+
+    state.roleCategories.forEach(category => {
+      const subcategories = state.roleSubcategoriesEnabled ? rows(category.subcategories) : [];
+      rows(category.roles).forEach(role => {
+        if (subcategories.length) {
+          subcategories.forEach(sub => {
+            const contextName = String(sub.name || 'Sottocategoria').trim();
+            const conflictKey = 'sub:' + (contextName.toLowerCase().replace(/\s+/g,' ') || sub.id);
+            rows(role.officialIdsBySubcategory?.[sub.id]).forEach(officialId => {
+              if (!byOfficial.has(officialId)) return;
+              byOfficial.get(officialId).assignments.push({
+                categoryId: category.id,
+                categoryName: category.name || 'Categoria',
+                roleId: role.id,
+                roleName: role.name || 'Ruolo',
+                subcategoryId: sub.id,
+                contextName,
+                conflictKey
+              });
+            });
+          });
+        } else {
+          rows(role.officialIds).forEach(officialId => {
+            if (!byOfficial.has(officialId)) return;
+            byOfficial.get(officialId).assignments.push({
+              categoryId: category.id,
+              categoryName: category.name || 'Categoria',
+              roleId: role.id,
+              roleName: role.name || 'Ruolo',
+              subcategoryId: null,
+              contextName: 'Generale',
+              conflictKey: 'category:' + category.id
+            });
+          });
+        }
+      });
+    });
+
+    return [...byOfficial.values()]
+      .map(entry => {
+        const groups = new Map();
+        entry.assignments.forEach(assignment => {
+          const list = groups.get(assignment.conflictKey) || [];
+          list.push(assignment);
+          groups.set(assignment.conflictKey,list);
+        });
+        const conflicts = [...groups.values()].filter(list => list.length > 1);
+        return {
+          ...entry,
+          conflicts,
+          hasConflict: conflicts.length > 0,
+          hasMultiple: entry.assignments.length > 1
+        };
+      })
+      .filter(entry => entry.assignments.length)
+      .sort((a,b) => {
+        if (a.hasConflict !== b.hasConflict) return a.hasConflict ? -1 : 1;
+        if (a.assignments.length !== b.assignments.length) return b.assignments.length - a.assignments.length;
+        return String(a.official.name || '').localeCompare(String(b.official.name || ''),'it');
+      });
+  }
+
+  function renderRolesByOfficial() {
+    const officials = buildOfficialRoleAssignments();
+    const multiple = officials.filter(item => item.hasMultiple).length;
+    const conflicts = officials.filter(item => item.hasConflict).length;
+
+    $('pageContent').innerHTML =
+      renderRolesViewSwitcher() +
+      '<div class="official-role-summary">' +
+        '<div class="surface official-summary-card"><span>UG con ruoli</span><strong>' + officials.length + '</strong></div>' +
+        '<div class="surface official-summary-card"><span>UG con più ruoli</span><strong>' + multiple + '</strong></div>' +
+        '<div class="surface official-summary-card warning"><span>Sovrapposizioni da verificare</span><strong>' + conflicts + '</strong></div>' +
+      '</div>' +
+      '<section class="surface official-role-view">' +
+        '<div class="official-role-view-head">' +
+          '<div><h2>Ruoli per ufficiale gara</h2>' +
+          '<p>Le segnalazioni indicano assegnazioni multiple nello stesso ambito. Sono controlli da verificare, non una certezza di incompatibilità oraria.</p></div>' +
+          '<label class="official-role-search"><span class="material-symbols-rounded">search</span><input id="officialRoleSearch" type="search" placeholder="Cerca UG"></label>' +
+        '</div>' +
+        '<div id="officialRoleCards" class="official-role-cards"></div>' +
+      '</section>';
+
+    bindRolesViewSwitcher();
+
+    const search = $('officialRoleSearch');
+    const draw = () => {
+      const query = search.value.trim().toLowerCase();
+      renderOfficialRoleCards(
+        officials.filter(item => !query || String(item.official.name || '').toLowerCase().includes(query))
+      );
+    };
+    search.oninput = draw;
+    draw();
+  }
+
+  function renderOfficialRoleCards(items) {
+    const box = $('officialRoleCards');
+    box.innerHTML = '';
+
+    if (!items.length) {
+      box.innerHTML = '<div class="compact-empty">Nessun ufficiale gara con assegnazioni.</div>';
+      return;
+    }
+
+    items.forEach(item => {
+      const card = document.createElement('article');
+      card.className = 'official-role-card' + (item.hasConflict ? ' has-conflict' : '');
+      card.innerHTML =
+        '<div class="official-role-card-head">' +
+          '<span class="official-chip-avatar official-role-avatar">' + esc(initials(item.official.name || 'UG')) + '</span>' +
+          '<div class="official-role-person"><strong>' + esc(item.official.name || 'UG senza nome') + '</strong>' +
+            (item.official.notes ? '<span>' + esc(item.official.notes) + '</span>' : '') +
+          '</div>' +
+          '<div class="official-role-badges">' +
+            '<span class="role-count-badge">' + item.assignments.length + ' ' + (item.assignments.length === 1 ? 'ruolo' : 'ruoli') + '</span>' +
+            (item.hasConflict ? '<span class="conflict-badge"><span class="material-symbols-rounded">warning</span>Da verificare</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="official-assignment-list"></div>' +
+        (item.hasConflict
+          ? '<div class="conflict-explanation"><span class="material-symbols-rounded">info</span><span>Questo UG compare in più ruoli nello stesso ambito o sottocategoria. Verifica che le attività siano compatibili.</span></div>'
+          : '');
+
+      const list = card.querySelector('.official-assignment-list');
+      item.assignments.forEach(assignment => {
+        const isConflict = item.conflicts.some(group => group.includes(assignment));
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'official-assignment-row' + (isConflict ? ' conflict' : '');
+        row.innerHTML =
+          '<span class="assignment-category">' + esc(assignment.categoryName) + '</span>' +
+          '<span class="assignment-role-name">' + esc(assignment.roleName) + '</span>' +
+          '<span class="assignment-context">' + esc(assignment.contextName) + '</span>' +
+          '<span class="material-symbols-rounded">arrow_forward</span>';
+        row.onclick = () => {
+          rolesViewMode = 'role';
+          selectedRoleCategoryId = assignment.categoryId;
+          selectedRoleId = assignment.roleId;
+          selectedRoleSubcategoryId = assignment.subcategoryId;
+          renderRoles();
+        };
+        list.append(row);
+      });
+
+      box.append(card);
+    });
   }
 
   function renderNotes() {
