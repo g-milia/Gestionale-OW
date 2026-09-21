@@ -164,7 +164,7 @@
     if (!state) return;
     $('eventTitle').textContent = state.event.name || 'Evento';
     $('eventSubtitle').textContent = [fmtDate(state.event.date),state.event.venue].filter(Boolean).join(' · ');
-    $('breadcrumb').innerHTML = '<span>Eventi</span><span>›</span><span>' + esc(state.event.name || 'Evento') + '</span><span>›</span><strong>' + esc(pageLabels[currentPage]) + '</strong>';
+    $('breadcrumb').innerHTML = '<span>' + esc(state.event.name || 'Evento') + '</span><span>›</span><strong>' + esc(pageLabels[currentPage]) + '</strong>';
   }
 
   function updateActions() {
