@@ -70,6 +70,7 @@
     <section class="app-main">
       <header class="topbar">
         <button id="mobileMenuBtn" class="icon-button mobile-only" type="button" aria-label="Apri menu"><span class="material-symbols-rounded">menu</span></button>
+        <button id="mobileTopBackBtn" class="icon-button mobile-only hidden" type="button" aria-label="Torna alla lista eventi"><span class="material-symbols-rounded">arrow_back</span></button>
         <div id="breadcrumb" class="breadcrumb"></div>
         <div class="top-actions">
           <label class="top-search">
@@ -130,10 +131,9 @@
   </div>
 
   <div id="mobileActionBar" class="mobile-action-bar hidden">
-    <button id="mobileBackBtn" type="button"><span class="material-symbols-rounded">arrow_back</span><small>Eventi</small></button>
-    <button id="mobilePdfBtn" type="button"><span class="material-symbols-rounded">picture_as_pdf</span><small>PDF</small></button>
-    <button id="mobileMoreBtn" type="button"><span class="material-symbols-rounded">more_horiz</span><small>Azioni</small></button>
-    <button id="mobileSaveBtn" class="primary-action hidden" type="button"><span class="material-symbols-rounded">save</span><small>Salva</small></button>
+    <button id="mobileSaveBtn" class="primary-action hidden" type="button"><span class="material-symbols-rounded">save</span><small>Salva modifiche</small></button>
+    <button id="mobilePdfBtn" type="button"><span class="material-symbols-rounded">picture_as_pdf</span><small>Anteprima PDF</small></button>
+    <button id="mobileSummaryBtn" type="button"><span class="material-symbols-rounded">print</span><small>PDF sintetico</small></button>
   </div>
 
   <dialog id="formDialog" class="modal">
@@ -182,19 +182,11 @@
     <div class="modal-foot"><button id="printPdfBtn" class="button primary" type="button"><span class="material-symbols-rounded">print</span>Stampa / PDF</button></div>
   </dialog>
 
-  <div id="mobileMoreSheet" class="bottom-sheet hidden">
-    <div class="sheet-handle"></div>
-    <button id="sheetCopyBtn" class="sheet-action hidden" type="button"><span class="material-symbols-rounded">content_copy</span>Copia evento</button>
-    <button id="sheetExportBtn" class="sheet-action hidden" type="button"><span class="material-symbols-rounded">download</span>Esporta</button>
-    <button id="sheetSummaryBtn" class="sheet-action" type="button"><span class="material-symbols-rounded">print</span>Stampa sintetica</button>
-    <button id="sheetCloseBtn" class="sheet-action" type="button"><span class="material-symbols-rounded">close</span>Chiudi</button>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script src="../js/auth.js"></script>
   <script src="../js/database.js"></script>
   <script src="print-i18n.js?v=20260921-print-fix"></script>
-  <script src="app.js?v=20260921-officialdetail1"></script>
+  <script src="app.js?v=20260921-mobile-actions1"></script>
 </body>
 </html>
