@@ -18,7 +18,8 @@ import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded';
 import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import WavesRounded from '@mui/icons-material/WavesRounded';
 import { api } from '../services/api';
-import { emptyEvent, formatDate } from '../utils/event';
+import { cloneEvent, emptyEvent, formatDate, normalizeEvent } from '../utils/event';
+import type { EventRecord } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 
 const roleLabel: Record<string, string> = {
@@ -69,11 +70,13 @@ export default function EventsPage() {
   async function importFile(file?: File) {
     if (!file) return;
     const raw = JSON.parse(await file.text());
-    const existing = raw?.id || raw?.eventId ? await api.getEvent(raw.id || raw.eventId).catch(() => null) : null;
-    let payload = raw;
+    const rawId = raw?.id || raw?.eventId || '';
+    const normalized = normalizeEvent({ ...raw, id: rawId } as EventRecord);
+    const existing = rawId ? await api.getEvent(rawId).catch(() => null) : null;
+    let payload = normalized;
     if (existing) {
       if (!confirm('Esiste già un evento con lo stesso ID. Importarlo come copia indipendente?')) return;
-      payload = { ...raw, id: '', eventId: null };
+      payload = cloneEvent(normalized, normalized.event.name + ' - Copia');
     }
     const saved = await api.importEvent(payload);
     queryClient.invalidateQueries({ queryKey: ['events'] });
