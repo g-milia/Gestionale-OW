@@ -88,6 +88,8 @@
     $('backEventsBtn').classList.add('hidden');
     $('permissionsSideLink').classList.add('hidden');
     $('mobileActionBar').classList.add('hidden');
+    $('mobileTopBackBtn').classList.add('hidden');
+    $('mobileMenuBtn').classList.remove('hidden');
     $('breadcrumb').textContent = '';
     $('newEventBtn').classList.toggle('hidden', !globalAccess.canCreate);
     $('importEventBtn').classList.toggle('hidden', !globalAccess.canImport);
@@ -148,6 +150,8 @@
       $('backEventsBtn').classList.remove('hidden');
       $('permissionsSideLink').classList.toggle('hidden', !access?.canManagePermissions);
       $('mobileActionBar').classList.remove('hidden');
+      $('mobileTopBackBtn').classList.remove('hidden');
+      $('mobileMenuBtn').classList.add('hidden');
       updateHeader();
       updateActions();
       showPage('general');
@@ -165,11 +169,15 @@
 
   function updateActions() {
     $('saveEventBtn').classList.toggle('hidden', !access?.canEdit);
-    $('mobileSaveBtn').classList.toggle('hidden', !access?.canEdit || !dirty);
+    $('mobileSaveBtn').classList.toggle('hidden', !access?.canEdit);
+    $('mobileSaveBtn').disabled = !!access?.canEdit && !dirty;
+    $('mobileActionBar').classList.toggle('viewer-only', !access?.canEdit);
     $('copyEventBtn').classList.toggle('hidden', !globalAccess.isAdmin || !state?.id);
     $('exportEventBtn').classList.toggle('hidden', !access?.canExport || !state?.id);
     $('pdfBtn').classList.toggle('hidden', !access?.canPrint);
     $('summaryPdfBtn').classList.toggle('hidden', !access?.canPrint);
+    $('mobilePdfBtn').classList.toggle('hidden', !access?.canPrint);
+    $('mobileSummaryBtn').classList.toggle('hidden', !access?.canPrint);
   }
 
   function markDirty() {
@@ -1285,16 +1293,15 @@
     if (dirty && !confirm('Ci sono modifiche non salvate. Tornare agli eventi e perderle?')) return;
     showHome();
   };
-  $('mobileBackBtn').onclick = $('backEventsBtn').onclick;
+  $('mobileTopBackBtn').onclick = $('backEventsBtn').onclick;
   document.querySelectorAll('.side-link[data-page]').forEach(btn => btn.onclick = () => { showPage(btn.dataset.page); toggleMenu(false); });
   $('saveEventBtn').onclick = saveEvent;
   $('mobileSaveBtn').onclick = saveEvent;
   $('exportEventBtn').onclick = exportCurrent;
-  $('sheetExportBtn').onclick = exportCurrent;
   $('pdfBtn').onclick = () => openPrint(false);
   $('mobilePdfBtn').onclick = () => openPrint(false);
   $('summaryPdfBtn').onclick = () => openPrint(true);
-  $('sheetSummaryBtn').onclick = () => openPrint(true);
+  $('mobileSummaryBtn').onclick = () => openPrint(true);
   $('closePdfBtn').onclick = () => $('pdfDialog').close();
   $('printPdfBtn').onclick = () => { $('pdfFrame').contentWindow.focus(); $('pdfFrame').contentWindow.print(); };
   $('printLanguage').onchange = () => {
@@ -1311,8 +1318,6 @@
   };
   $('mobileMenuBtn').onclick = () => toggleMenu(true);
   $('mobileScrim').onclick = () => toggleMenu(false);
-  $('mobileMoreBtn').onclick = () => $('mobileMoreSheet').classList.remove('hidden');
-  $('sheetCloseBtn').onclick = () => $('mobileMoreSheet').classList.add('hidden');
 
   async function init() {
     session = await OWAuth.session();
