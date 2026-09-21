@@ -37,6 +37,14 @@
     async importEvent(event) {
       return fromApi(await rpc('import_event_v2', { p_event: toApi(event) }));
     },
-    deleteEvent: eventId => rpc('delete_event_v2', { p_event_id: eventId })
+    deleteEvent: eventId => rpc('delete_event_v2', { p_event_id: eventId }),
+    currentUserAccess: () => rpc('get_current_user_access'),
+    eventAccess: eventId => rpc('get_my_event_access', { p_event_id: eventId }),
+    listEventPermissions: eventId => rpc('list_event_permissions', { p_event_id: eventId }),
+    setEventPermission: (eventId, userId, role) => rpc('set_event_permission', {
+      p_event_id: eventId,
+      p_user_id: userId,
+      p_role: role || null
+    })
   };
 })();
