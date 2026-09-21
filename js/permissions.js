@@ -46,7 +46,7 @@
       canPrint: true
     };
 
-    setHidden('permissionsNavBtn', !access.canManagePermissions);
+    setHidden('permissionsNavBtn', !access.canManagePermissions || !currentEventId);
     setHidden('saveEventBtn', !access.canEdit);
     setHidden('copyEventBtn', !globalAccess.isAdmin || !currentEventId);
     setHidden('exportEventBtn', !access.canExport || !currentEventId);
