@@ -1,7 +1,8 @@
 import type { EventRecord } from '../types';
 import { formatDate } from './event';
 
-const esc = (value: unknown) => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
+const entities: Record<string, string> = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+const esc = (value: unknown) => String(value ?? '').replace(/[&<>"']/g, c => entities[c] || c);
 const rows = <T,>(value: T[] | undefined | null) => Array.isArray(value) ? value.filter(Boolean) : [];
 
 const I18N = {
