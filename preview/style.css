@@ -176,10 +176,12 @@ tr:last-child td{border-bottom:0}
   .page-head h1,.event-head h1{font-size:30px}
   .desktop-only{display:none!important}
   .mobile-only{display:inline-flex}
-  .mobile-action-bar{position:fixed;left:10px;right:10px;bottom:10px;z-index:35;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 16px 45px rgba(10,33,67,.2);padding:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-  .mobile-action-bar button{border:0;background:transparent;color:var(--navy);border-radius:13px;min-height:54px;display:grid;place-items:center;font-weight:700}
-  .mobile-action-bar button small{font-size:10px}
+  .mobile-action-bar{position:fixed;left:10px;right:10px;bottom:10px;z-index:35;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 16px 45px rgba(10,33,67,.2);padding:8px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .mobile-action-bar.viewer-only{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mobile-action-bar button{border:0;background:transparent;color:var(--navy);border-radius:13px;min-height:58px;display:grid;place-items:center;align-content:center;gap:2px;font-weight:700;padding:5px 3px}
+  .mobile-action-bar button small{font-size:10px;line-height:1.15;text-align:center}
   .mobile-action-bar .primary-action{background:var(--navy);color:#fff}
+  .mobile-action-bar .primary-action:disabled{background:#dce4ee;color:#7d8da2;opacity:1;cursor:default}
   .scrim{display:block;position:fixed;inset:0;background:rgba(3,18,39,.5);z-index:39}
   .data-row,.data-row.timeline-row,.data-row.official-row,.role-item{grid-template-columns:1fr}
   .row-actions{justify-content:flex-end}
@@ -1676,5 +1678,19 @@ tr:last-child td{border-bottom:0}
   .official-category-summary-head>.conflict-badge{
     grid-column:1/-1;
     width:max-content;
+  }
+}
+
+@media(max-width:840px){
+  #mobileTopBackBtn{
+    flex:0 0 44px;
+    border-color:transparent;
+    background:transparent;
+    box-shadow:none;
+  }
+  #mobileTopBackBtn:hover{transform:none;box-shadow:none;background:#eef3f8}
+  .topbar:has(#mobileTopBackBtn:not(.hidden)) .breadcrumb{
+    flex:1;
+    min-width:0;
   }
 }
