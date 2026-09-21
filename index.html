@@ -54,6 +54,7 @@
         <button class="nav-btn" data-view="ug">UG</button>
         <button class="nav-btn" data-view="ruoli">Ruoli</button>
         <button class="nav-btn" data-view="note">Note Arbitro</button>
+        <button id="permissionsNavBtn" class="nav-btn hidden" data-view="permissions">Permessi</button>
       </nav>
 
       <section class="view" id="view-evento">
@@ -76,6 +77,17 @@
       <section class="view hidden" id="view-ug"><div class="section-head"><div><h2>Ufficiali Gara</h2><div class="muted">Elenco UG e note.</div></div><button id="addOfficialBtn" class="primary">＋ UG</button></div><div class="card"><div id="officialList" class="list"></div></div></section>
       <section class="view hidden" id="view-ruoli"><div class="section-head"><div><h2>Ruoli</h2><div class="muted">Categorie, ruoli e assegnazioni UG.</div></div><button id="addRoleCategoryBtn" class="primary">＋ Categoria</button></div><div id="roleCategoryList" class="list"></div></section>
       <section class="view hidden" id="view-note"><div class="section-head"><div><h2>Note Arbitro</h2><div class="muted">Briefing e checklist operativa.</div></div></div><div class="card grid"><label class="wide">Briefing Atleti<textarea id="briefingAthletes"></textarea></label><label class="wide">Briefing Giuria<textarea id="briefingJury"></textarea></label><div class="wide inline"><input id="checklistInput" placeholder="Nuova voce checklist"><button id="addChecklistBtn" class="primary">＋ Aggiungi</button></div><div class="wide" id="checklistBox"></div></div></section>
+      <section class="view hidden" id="view-permissions">
+        <div class="section-head">
+          <div>
+            <h2>Permessi</h2>
+            <div class="muted">Gestisci chi può accedere a questo evento.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div id="permissionsList" class="list"></div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -109,5 +121,6 @@
   <script src="js/copy-event.js?v=20260917-io-1"></script>
   <script src="js/import-export.js?v=20260917-io-1"></script>
   <script src="js/print-i18n.js?v=20260918-i18n-1"></script>
+  <script src="js/permissions.js?v=20260921-permissions-1"></script>
 </body>
 </html>
