@@ -25,6 +25,7 @@
   let currentPage = 'general';
   let eventRows = [];
   let dirty = false;
+  let selectedRoleCategoryId = null;
 
   function toast(text, error) {
     const node = $('status');
@@ -424,152 +425,378 @@
   }
 
   function renderRoles() {
+    if (!selectedRoleCategoryId || !state.roleCategories.some(category => category.id === selectedRoleCategoryId)) {
+      selectedRoleCategoryId = state.roleCategories[0]?.id || null;
+    }
+
     $('pageContent').innerHTML =
-      '<section class="surface page-card"><div class="toggle-line"><div class="card-title"><span class="material-symbols-rounded">layers</span>' +
-      '<div><h2 style="margin:0">Sottocategorie ruoli</h2><div class="row-muted">Abilita assegnazioni UG distinte per sottocategoria.</div></div></div>' +
-      '<label class="switch"><input id="roleSubToggle" type="checkbox" ' + (state.roleSubcategoriesEnabled ? 'checked' : '') + '><span></span></label></div></section>' +
-      '<div class="card-head" style="margin:4px 0 14px"><div class="card-title"><span class="material-symbols-rounded">shield_person</span><h2>Ruoli</h2></div>' +
-      '<button id="addCategoryBtn" class="button primary" data-edit><span class="material-symbols-rounded">add</span>Aggiungi categoria</button></div>' +
-      '<div id="roleCategories" class="roles-stack"></div>';
+      '<div class="roles-master-detail">' +
+        '<aside class="surface roles-master">' +
+          '<div class="roles-master-head">' +
+            '<div><h2>Categorie</h2><div class="row-muted">Seleziona una categoria per gestirne i ruoli.</div></div>' +
+            '<button id="addCategoryBtn" class="icon-button" data-edit title="Nuova categoria"><span class="material-symbols-rounded">add</span></button>' +
+          '</div>' +
+          '<div id="roleCategoryNav" class="role-category-nav"></div>' +
+        '</aside>' +
+        '<section id="roleCategoryDetail" class="roles-detail"></section>' +
+      '</div>';
+
+    $('addCategoryBtn').onclick = () => {
+      const category = {id:uid(),name:'Nuova categoria',subcategories:[],roles:[]};
+      state.roleCategories.push(category);
+      selectedRoleCategoryId = category.id;
+      markDirty();
+      renderRoles();
+    };
+
+    renderRoleCategoryNav();
+    renderSelectedRoleCategory();
+    setReadOnly();
+  }
+
+  function countRoleAssignments(category) {
+    let assigned = 0;
+    let empty = 0;
+    rows(category.roles).forEach(role => {
+      let ids = [];
+      if (state.roleSubcategoriesEnabled && rows(category.subcategories).length) {
+        rows(category.subcategories).forEach(sub => {
+          ids.push(...rows(role.officialIdsBySubcategory?.[sub.id]));
+        });
+      } else {
+        ids = rows(role.officialIds);
+      }
+      const unique = [...new Set(ids)];
+      if (unique.length) assigned += unique.length;
+      else empty += 1;
+    });
+    return {assigned, empty};
+  }
+
+  function renderRoleCategoryNav() {
+    const nav = $('roleCategoryNav');
+    nav.innerHTML = '';
+    if (!state.roleCategories.length) {
+      nav.innerHTML = '<div class="empty-state compact-empty">Nessuna categoria.</div>';
+      return;
+    }
+
+    state.roleCategories.forEach((category,index) => {
+      const stats = countRoleAssignments(category);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'role-category-nav-item' + (category.id === selectedRoleCategoryId ? ' active' : '');
+      button.innerHTML =
+        '<span class="role-category-index">' + String(index + 1).padStart(2,'0') + '</span>' +
+        '<span class="role-category-nav-copy"><strong>' + esc(category.name || 'Categoria') + '</strong>' +
+        '<small>' + rows(category.roles).length + ' ruoli' + (stats.empty ? ' · ' + stats.empty + ' senza UG' : '') + '</small></span>' +
+        '<span class="material-symbols-rounded">chevron_right</span>';
+      button.onclick = () => {
+        selectedRoleCategoryId = category.id;
+        renderRoleCategoryNav();
+        renderSelectedRoleCategory();
+        setReadOnly();
+      };
+      nav.append(button);
+    });
+  }
+
+  function renderSelectedRoleCategory() {
+    const detail = $('roleCategoryDetail');
+    const category = state.roleCategories.find(item => item.id === selectedRoleCategoryId);
+
+    if (!category) {
+      detail.innerHTML =
+        '<section class="surface empty-role-detail">' +
+          '<span class="material-symbols-rounded">shield_person</span>' +
+          '<h2>Nessuna categoria selezionata</h2>' +
+          '<p>Aggiungi una categoria per iniziare.</p>' +
+        '</section>';
+      return;
+    }
+
+    category.subcategories = rows(category.subcategories);
+    category.roles = rows(category.roles);
+    const categoryIndex = state.roleCategories.indexOf(category);
+
+    detail.innerHTML =
+      '<section class="surface role-detail-card">' +
+        '<div class="role-detail-head">' +
+          '<div class="role-detail-title">' +
+            '<span class="role-category-index large">' + String(categoryIndex + 1).padStart(2,'0') + '</span>' +
+            '<div><input id="selectedCategoryName" class="inline-title-input" value="' + esc(category.name || '') + '">' +
+            '<div class="row-muted">' + category.roles.length + ' ruoli in questa categoria</div></div>' +
+          '</div>' +
+          '<div class="row-actions" data-edit>' +
+            '<button id="categoryUpBtn" class="icon-button" ' + (categoryIndex === 0 ? 'disabled' : '') + ' title="Sposta su"><span class="material-symbols-rounded">arrow_upward</span></button>' +
+            '<button id="categoryDownBtn" class="icon-button" ' + (categoryIndex === state.roleCategories.length - 1 ? 'disabled' : '') + ' title="Sposta giù"><span class="material-symbols-rounded">arrow_downward</span></button>' +
+            '<button id="deleteCategoryBtn" class="icon-button danger-icon" title="Elimina categoria"><span class="material-symbols-rounded">delete</span></button>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="role-subcategory-bar">' +
+          '<div><strong>Sottocategorie</strong><div class="row-muted">Assegna UG distinti per sottocategoria quando necessario.</div></div>' +
+          '<label class="switch"><input id="roleSubToggle" type="checkbox" ' + (state.roleSubcategoriesEnabled ? 'checked' : '') + '><span></span></label>' +
+        '</div>' +
+
+        '<div id="subcategoryManager"></div>' +
+
+        '<div class="roles-section-head">' +
+          '<div><h3>Ruoli</h3><div class="row-muted">Ogni card mostra subito le assegnazioni correnti.</div></div>' +
+          '<button id="addRoleBtn" class="button primary" data-edit><span class="material-symbols-rounded">add</span>Aggiungi ruolo</button>' +
+        '</div>' +
+        '<div id="selectedRoleList" class="selected-role-list"></div>' +
+      '</section>';
+
+    $('selectedCategoryName').oninput = e => {
+      category.name = e.target.value;
+      markDirty();
+      renderRoleCategoryNav();
+    };
+
+    $('categoryUpBtn').onclick = () => moveSelectedCategory(-1);
+    $('categoryDownBtn').onclick = () => moveSelectedCategory(1);
+    $('deleteCategoryBtn').onclick = () => {
+      if (!confirm('Eliminare questa categoria e tutti i suoi ruoli?')) return;
+      state.roleCategories = state.roleCategories.filter(item => item.id !== category.id);
+      selectedRoleCategoryId = state.roleCategories[Math.max(0, categoryIndex - 1)]?.id || state.roleCategories[0]?.id || null;
+      markDirty();
+      renderRoles();
+    };
+
     $('roleSubToggle').onchange = e => {
       state.roleSubcategoriesEnabled = e.target.checked;
       markDirty();
-      renderRoleCategories();
+      renderSelectedRoleCategory();
+      setReadOnly();
     };
-    $('addCategoryBtn').onclick = () => {
-      state.roleCategories.push({id:uid(),name:'Nuova categoria',subcategories:[],roles:[]});
+
+    $('addRoleBtn').onclick = () => {
+      category.roles.push({id:uid(),name:'Nuovo ruolo',officialIds:[],officialIdsBySubcategory:{}});
       markDirty();
-      renderRoleCategories();
+      renderSelectedRoleCategory();
+      renderRoleCategoryNav();
+      setReadOnly();
     };
-    renderRoleCategories();
+
+    renderSubcategoryManager(category);
+    renderSelectedRoleList(category);
   }
 
-  function renderRoleCategories() {
-    const box = $('roleCategories');
-    box.innerHTML = '';
-    if (!state.roleCategories.length) {
-      box.innerHTML = '<div class="surface empty-state">Nessuna categoria ruoli.</div>';
-      setReadOnly();
+  function moveSelectedCategory(direction) {
+    const index = state.roleCategories.findIndex(item => item.id === selectedRoleCategoryId);
+    const next = index + direction;
+    if (index < 0 || next < 0 || next >= state.roleCategories.length) return;
+    [state.roleCategories[index],state.roleCategories[next]] = [state.roleCategories[next],state.roleCategories[index]];
+    markDirty();
+    renderRoleCategoryNav();
+    renderSelectedRoleCategory();
+    setReadOnly();
+  }
+
+  function renderSubcategoryManager(category) {
+    const box = $('subcategoryManager');
+    if (!state.roleSubcategoriesEnabled) {
+      box.innerHTML = '';
       return;
     }
-    state.roleCategories.forEach((category, ci) => {
-      category.subcategories = rows(category.subcategories);
-      category.roles = rows(category.roles);
-      const card = document.createElement('section');
-      card.className = 'surface role-category';
-      card.innerHTML =
-        '<div class="role-category-head"><input class="category-name" value="' + esc(category.name || '') + '">' +
-        '<button class="icon-button cat-up" data-edit ' + (ci===0?'disabled':'') + '><span class="material-symbols-rounded">arrow_upward</span></button>' +
-        '<button class="icon-button cat-down" data-edit ' + (ci===state.roleCategories.length-1?'disabled':'') + '><span class="material-symbols-rounded">arrow_downward</span></button>' +
-        '<button class="button tonal add-role" data-edit><span class="material-symbols-rounded">add</span>Ruolo</button>' +
-        '<button class="icon-button delete-cat" data-edit><span class="material-symbols-rounded">delete</span></button></div>' +
-        (state.roleSubcategoriesEnabled ? '<div class="subcategory-box"><div class="card-head" style="margin:0"><strong>Sottocategorie</strong><button class="button ghost add-sub" data-edit>+ Aggiungi</button></div><div class="subcategory-list"></div></div>' : '') +
-        '<div class="role-list"></div>';
 
-      card.querySelector('.category-name').oninput = e => { category.name = e.target.value; markDirty(); };
-      card.querySelector('.cat-up').onclick = () => moveRoleItem(state.roleCategories,ci,-1);
-      card.querySelector('.cat-down').onclick = () => moveRoleItem(state.roleCategories,ci,1);
-      card.querySelector('.add-role').onclick = () => {
-        category.roles.push({id:uid(),name:'Nuovo ruolo',officialIds:[],officialIdsBySubcategory:{}});
-        markDirty();
-        renderRoleCategories();
-      };
-      card.querySelector('.delete-cat').onclick = () => {
-        state.roleCategories.splice(ci,1);
-        markDirty();
-        renderRoleCategories();
-      };
+    box.innerHTML =
+      '<div class="subcategory-chip-row" id="subcategoryChips"></div>' +
+      '<button id="addSubcategoryBtn" class="button ghost compact-button" data-edit><span class="material-symbols-rounded">add</span>Aggiungi sottocategoria</button>';
 
-      if (state.roleSubcategoriesEnabled) {
-        const list = card.querySelector('.subcategory-list');
-        card.querySelector('.add-sub').onclick = () => {
-          category.subcategories.push({id:uid(),name:''});
-          markDirty();
-          renderRoleCategories();
-        };
-        if (!category.subcategories.length) list.innerHTML = '<div class="row-muted">Nessuna sottocategoria.</div>';
-        category.subcategories.forEach(sub => {
-          const row = document.createElement('div');
-          row.className = 'subcategory-row';
-          row.innerHTML = '<input value="' + esc(sub.name || '') + '" placeholder="Nome sottocategoria"><button class="icon-button" data-edit><span class="material-symbols-rounded">delete</span></button>';
-          row.querySelector('input').oninput = e => { sub.name = e.target.value; markDirty(); };
-          row.querySelector('button').onclick = () => {
-            category.subcategories = category.subcategories.filter(x => x.id !== sub.id);
-            category.roles.forEach(role => {
-              if (role.officialIdsBySubcategory) delete role.officialIdsBySubcategory[sub.id];
-            });
-            markDirty();
-            renderRoleCategories();
-          };
-          list.append(row);
+    const chips = $('subcategoryChips');
+    if (!category.subcategories.length) {
+      chips.innerHTML = '<span class="row-muted">Nessuna sottocategoria configurata.</span>';
+    }
+
+    category.subcategories.forEach(sub => {
+      const chip = document.createElement('div');
+      chip.className = 'editable-subcategory-chip';
+      chip.innerHTML =
+        '<input value="' + esc(sub.name || '') + '" placeholder="Sottocategoria">' +
+        '<button type="button" data-edit title="Elimina"><span class="material-symbols-rounded">close</span></button>';
+      chip.querySelector('input').oninput = e => {
+        sub.name = e.target.value;
+        markDirty();
+        renderSelectedRoleList(category);
+      };
+      chip.querySelector('button').onclick = () => {
+        category.subcategories = category.subcategories.filter(item => item.id !== sub.id);
+        category.roles.forEach(role => {
+          if (role.officialIdsBySubcategory) delete role.officialIdsBySubcategory[sub.id];
         });
-      }
+        markDirty();
+        renderSubcategoryManager(category);
+        renderSelectedRoleList(category);
+        setReadOnly();
+      };
+      chips.append(chip);
+    });
 
-      const roleList = card.querySelector('.role-list');
-      category.roles.forEach((role, ri) => {
-        role.officialIds = rows(role.officialIds);
-        role.officialIdsBySubcategory = role.officialIdsBySubcategory || {};
-        const item = document.createElement('div');
-        item.className = 'role-item';
-        item.innerHTML =
-          '<div><input class="role-name" value="' + esc(role.name || '') + '"></div>' +
-          '<div class="assignment-groups"></div>' +
-          '<div class="row-actions" data-edit><button class="icon-button role-up" ' + (ri===0?'disabled':'') + '><span class="material-symbols-rounded">arrow_upward</span></button>' +
-          '<button class="icon-button role-down" ' + (ri===category.roles.length-1?'disabled':'') + '><span class="material-symbols-rounded">arrow_downward</span></button>' +
-          '<button class="icon-button role-remove"><span class="material-symbols-rounded">delete</span></button></div>';
-        item.querySelector('.role-name').oninput = e => { role.name = e.target.value; markDirty(); };
-        item.querySelector('.role-up').onclick = () => moveRoleItem(category.roles,ri,-1);
-        item.querySelector('.role-down').onclick = () => moveRoleItem(category.roles,ri,1);
-        item.querySelector('.role-remove').onclick = () => {
-          category.roles.splice(ri,1);
-          markDirty();
-          renderRoleCategories();
-        };
+    $('addSubcategoryBtn').onclick = () => {
+      category.subcategories.push({id:uid(),name:''});
+      markDirty();
+      renderSubcategoryManager(category);
+      renderSelectedRoleList(category);
+      setReadOnly();
+    };
+  }
 
-        const groups = state.roleSubcategoriesEnabled && category.subcategories.length
-          ? category.subcategories.map(sub => ({id:sub.id,label:sub.name || 'Sottocategoria'}))
-          : [{id:'',label:'UG assegnati'}];
-        groups.forEach(group => item.querySelector('.assignment-groups').append(buildAssignment(role,group.id,group.label)));
-        roleList.append(item);
+  function renderSelectedRoleList(category) {
+    const list = $('selectedRoleList');
+    list.innerHTML = '';
+
+    if (!category.roles.length) {
+      list.innerHTML = '<div class="empty-state compact-empty">Nessun ruolo in questa categoria.</div>';
+      return;
+    }
+
+    category.roles.forEach((role,index) => {
+      role.officialIds = rows(role.officialIds);
+      role.officialIdsBySubcategory = role.officialIdsBySubcategory || {};
+      const card = document.createElement('article');
+      card.className = 'modern-role-card';
+
+      const groups = state.roleSubcategoriesEnabled && category.subcategories.length
+        ? category.subcategories.map(sub => ({id:sub.id,label:sub.name || 'Sottocategoria'}))
+        : [{id:'',label:'UG assegnati'}];
+
+      let totalAssigned = 0;
+      groups.forEach(group => {
+        const ids = group.id ? rows(role.officialIdsBySubcategory[group.id]) : rows(role.officialIds);
+        totalAssigned += new Set(ids).size;
       });
-      box.append(card);
+
+      card.innerHTML =
+        '<div class="modern-role-head">' +
+          '<div class="modern-role-name-wrap">' +
+            '<span class="material-symbols-rounded drag-handle">drag_indicator</span>' +
+            '<div><input class="modern-role-name" value="' + esc(role.name || '') + '">' +
+            '<div class="role-assignment-summary ' + (totalAssigned ? '' : 'missing') + '">' +
+              (totalAssigned ? totalAssigned + ' UG assegnati' : 'Nessun UG assegnato') +
+            '</div></div>' +
+          '</div>' +
+          '<div class="row-actions" data-edit>' +
+            '<button class="icon-button role-up" ' + (index===0?'disabled':'') + ' title="Sposta su"><span class="material-symbols-rounded">arrow_upward</span></button>' +
+            '<button class="icon-button role-down" ' + (index===category.roles.length-1?'disabled':'') + ' title="Sposta giù"><span class="material-symbols-rounded">arrow_downward</span></button>' +
+            '<button class="icon-button role-remove danger-icon" title="Elimina"><span class="material-symbols-rounded">delete</span></button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="role-assignment-grid"></div>';
+
+      card.querySelector('.modern-role-name').oninput = e => {
+        role.name = e.target.value;
+        markDirty();
+      };
+      card.querySelector('.role-up').onclick = () => moveRoleWithinCategory(category,index,-1);
+      card.querySelector('.role-down').onclick = () => moveRoleWithinCategory(category,index,1);
+      card.querySelector('.role-remove').onclick = () => {
+        category.roles.splice(index,1);
+        markDirty();
+        renderSelectedRoleList(category);
+        renderRoleCategoryNav();
+        setReadOnly();
+      };
+
+      const assignmentGrid = card.querySelector('.role-assignment-grid');
+      groups.forEach(group => assignmentGrid.append(buildModernAssignment(category,role,group.id,group.label)));
+
+      list.append(card);
     });
     setReadOnly();
   }
 
-  function buildAssignment(role, subId, label) {
+  function moveRoleWithinCategory(category,index,direction) {
+    const next = index + direction;
+    if (next < 0 || next >= category.roles.length) return;
+    [category.roles[index],category.roles[next]] = [category.roles[next],category.roles[index]];
+    markDirty();
+    renderSelectedRoleList(category);
+    setReadOnly();
+  }
+
+  function buildModernAssignment(category,role,subId,label) {
     const ids = subId ? rows(role.officialIdsBySubcategory?.[subId]) : rows(role.officialIds);
-    const box = document.createElement('div');
-    box.className = 'assignment-box';
-    box.innerHTML = '<div class="assignment-label">' + esc(label) + '</div><div class="assignment-chips"></div><select><option value="">Assegna UG…</option></select>';
+    const box = document.createElement('section');
+    box.className = 'modern-assignment-box';
+    box.innerHTML =
+      '<div class="modern-assignment-head"><strong>' + esc(label) + '</strong>' +
+      '<button type="button" class="assign-official-button" data-edit><span class="material-symbols-rounded">person_add</span>Assegna UG</button></div>' +
+      '<div class="assignment-chips"></div>' +
+      '<div class="official-picker-slot"></div>';
+
     const chips = box.querySelector('.assignment-chips');
-    if (!ids.length) chips.innerHTML = '<span class="row-muted">Nessun UG assegnato</span>';
+    if (!ids.length) chips.innerHTML = '<span class="no-assignment">Nessun UG assegnato</span>';
+
     ids.forEach(id => {
-      const official = state.officials.find(o => o.id === id);
+      const official = state.officials.find(item => item.id === id);
       const chip = document.createElement('span');
-      chip.className = 'chip';
-      chip.innerHTML = esc(official?.name || 'UG senza nome') + '<button type="button">×</button>';
+      chip.className = 'official-chip';
+      chip.innerHTML =
+        '<span class="official-chip-avatar">' + esc(initials(official?.name || 'UG')) + '</span>' +
+        '<span>' + esc(official?.name || 'UG senza nome') + '</span>' +
+        '<button type="button" data-edit aria-label="Rimuovi">×</button>';
       chip.querySelector('button').onclick = () => {
-        setAssignmentIds(role,subId,ids.filter(x=>x!==id));
+        setAssignmentIds(role,subId,ids.filter(value => value !== id));
         markDirty();
-        renderRoleCategories();
+        renderSelectedRoleList(category);
+        renderRoleCategoryNav();
+        setReadOnly();
       };
       chips.append(chip);
     });
-    const select = box.querySelector('select');
-    state.officials.filter(o => !ids.includes(o.id)).forEach(o => {
-      const option = document.createElement('option');
-      option.value = o.id;
-      option.textContent = o.name || 'UG senza nome';
-      select.append(option);
-    });
-    select.onchange = () => {
-      if (!select.value) return;
-      setAssignmentIds(role,subId,[...new Set([...ids,select.value])]);
-      markDirty();
-      renderRoleCategories();
+
+    box.querySelector('.assign-official-button').onclick = () => {
+      renderOfficialPicker(box.querySelector('.official-picker-slot'),category,role,subId,ids);
     };
     return box;
+  }
+
+  function renderOfficialPicker(slot,category,role,subId,currentIds) {
+    slot.innerHTML =
+      '<div class="official-picker">' +
+        '<div class="official-picker-search"><span class="material-symbols-rounded">search</span><input type="search" placeholder="Cerca ufficiale gara"></div>' +
+        '<div class="official-picker-list"></div>' +
+      '</div>';
+
+    const input = slot.querySelector('input');
+    const list = slot.querySelector('.official-picker-list');
+
+    const draw = () => {
+      const query = input.value.trim().toLowerCase();
+      const candidates = state.officials.filter(official =>
+        !currentIds.includes(official.id) &&
+        (!query || String(official.name || '').toLowerCase().includes(query))
+      );
+      list.innerHTML = '';
+      if (!candidates.length) {
+        list.innerHTML = '<div class="official-picker-empty">Nessun UG disponibile.</div>';
+        return;
+      }
+      candidates.forEach(official => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'official-picker-item';
+        button.innerHTML =
+          '<span class="official-chip-avatar">' + esc(initials(official.name || 'UG')) + '</span>' +
+          '<span><strong>' + esc(official.name || 'UG senza nome') + '</strong>' +
+          (official.notes ? '<small>' + esc(official.notes) + '</small>' : '') +
+          '</span><span class="material-symbols-rounded">add</span>';
+        button.onclick = () => {
+          setAssignmentIds(role,subId,[...new Set([...currentIds,official.id])]);
+          markDirty();
+          renderSelectedRoleList(category);
+          renderRoleCategoryNav();
+          setReadOnly();
+        };
+        list.append(button);
+      });
+    };
+
+    input.oninput = draw;
+    draw();
+    input.focus();
   }
 
   function setAssignmentIds(role,subId,ids) {
@@ -578,14 +805,6 @@
       role.officialIdsBySubcategory = role.officialIdsBySubcategory || {};
       role.officialIdsBySubcategory[subId] = ids;
     }
-  }
-
-  function moveRoleItem(array,index,direction) {
-    const next = index + direction;
-    if (next < 0 || next >= array.length) return;
-    [array[index],array[next]] = [array[next],array[index]];
-    markDirty();
-    renderRoleCategories();
   }
 
   function renderNotes() {
