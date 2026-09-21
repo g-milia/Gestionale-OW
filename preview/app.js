@@ -29,7 +29,7 @@
   let selectedRoleId = null;
   let selectedRoleSubcategoryId = null;
   let rolesViewMode = 'role';
-  let officialsViewMode = 'list';
+  let selectedOfficialId = null;
 
   function toast(text, error) {
     const node = $('status');
@@ -372,71 +372,67 @@
   }
 
   function renderOfficials() {
-    $('pageContent').innerHTML =
-      '<div class="section-view-switcher">' +
-        '<div><h2>Ufficiali gara</h2><div class="row-muted">Gestisci gli UG oppure controlla tutti i ruoli assegnati a ciascuno.</div></div>' +
-        '<div class="segmented-control">' +
-          '<button type="button" data-officials-view="list" class="' + (officialsViewMode === 'list' ? 'active' : '') + '"><span class="material-symbols-rounded">groups</span>Elenco UG</button>' +
-          '<button type="button" data-officials-view="roles" class="' + (officialsViewMode === 'roles' ? 'active' : '') + '"><span class="material-symbols-rounded">fact_check</span>Verifica ruoli</button>' +
-        '</div>' +
-      '</div>' +
-      '<div id="officialsSectionBody"></div>';
-
-    document.querySelectorAll('[data-officials-view]').forEach(button => {
-      button.onclick = () => {
-        officialsViewMode = button.dataset.officialsView;
-        renderOfficials();
-      };
-    });
-
-    if (officialsViewMode === 'roles') renderOfficialsRoleCheck();
-    else renderOfficialsList();
-
+    if (selectedOfficialId && state.officials.some(official => official.id === selectedOfficialId)) {
+      renderOfficialDetail();
+      setReadOnly();
+      return;
+    }
+    selectedOfficialId = null;
+    renderOfficialsList();
     setReadOnly();
   }
 
   function renderOfficialsList() {
-    const root = $('officialsSectionBody');
-    root.innerHTML =
+    $('pageContent').innerHTML =
+      '<div class="officials-page-head">' +
+        '<div><h2>Ufficiali gara</h2><div class="row-muted">Apri un ufficiale gara per vedere i dati e il riepilogo completo dei ruoli assegnati.</div></div>' +
+        '<button id="addOfficialBtn" class="button primary" data-edit><span class="material-symbols-rounded">person_add</span>Aggiungi UG</button>' +
+      '</div>' +
       '<section class="surface page-card">' +
-        '<div class="card-head"><div class="card-title"><span class="material-symbols-rounded">groups</span><h2>Elenco ufficiali gara</h2></div>' +
-        '<button id="addOfficialBtn" class="button primary" data-edit><span class="material-symbols-rounded">person_add</span>Aggiungi UG</button></div>' +
         '<div id="officialRows" class="data-list"></div>' +
       '</section>';
+
     $('addOfficialBtn').onclick = () => editOfficial();
     renderOfficialRows();
   }
 
-  function renderOfficialsRoleCheck() {
-    const officials = buildOfficialRoleAssignments();
-    const multiple = officials.filter(item => item.hasMultiple).length;
-    const conflicts = officials.filter(item => item.hasConflict).length;
-    const root = $('officialsSectionBody');
+  function renderOfficialDetail() {
+    const official = state.officials.find(item => item.id === selectedOfficialId);
+    if (!official) {
+      selectedOfficialId = null;
+      renderOfficialsList();
+      return;
+    }
 
-    root.innerHTML =
-      '<div class="official-role-summary">' +
-        '<div class="surface official-summary-card"><span>UG con ruoli</span><strong>' + officials.length + '</strong></div>' +
-        '<div class="surface official-summary-card"><span>UG con più ruoli</span><strong>' + multiple + '</strong></div>' +
-        '<div class="surface official-summary-card warning"><span>Sovrapposizioni da verificare</span><strong>' + conflicts + '</strong></div>' +
+    const summary = buildSingleOfficialRoleSummary(official.id);
+    const totalRoles = summary.reduce((total,category) => total + category.assignmentCount,0);
+    const conflictContexts = summary.reduce((total,category) => total + category.conflictContexts,0);
+
+    $('pageContent').innerHTML =
+      '<div class="official-detail-toolbar">' +
+        '<button id="backToOfficialsBtn" class="button ghost"><span class="material-symbols-rounded">arrow_back</span>Torna agli UG</button>' +
+        '<div class="row-actions" data-edit><button id="editCurrentOfficialBtn" class="button tonal"><span class="material-symbols-rounded">edit</span>Modifica UG</button></div>' +
       '</div>' +
-      '<section class="surface official-role-view">' +
-        '<div class="official-role-view-head">' +
-          '<div><h2>Verifica ruoli per UG</h2>' +
-          '<p>La segnalazione evidenzia più assegnazioni nello stesso ambito o sottocategoria. Non significa automaticamente che i ruoli siano incompatibili: serve una verifica operativa.</p></div>' +
-          '<label class="official-role-search"><span class="material-symbols-rounded">search</span><input id="officialRoleSearch" data-readonly-allow type="search" placeholder="Cerca UG"></label>' +
+      '<section class="surface official-detail-header">' +
+        '<span class="official-chip-avatar official-detail-avatar">' + esc(initials(official.name || 'UG')) + '</span>' +
+        '<div class="official-detail-person"><h2>' + esc(official.name || 'UG senza nome') + '</h2>' +
+          (official.notes ? '<p>' + esc(official.notes) + '</p>' : '<p class="row-muted">Nessuna nota</p>') +
         '</div>' +
-        '<div id="officialRoleCards" class="official-role-cards"></div>' +
-      '</section>';
+        '<div class="official-detail-metrics">' +
+          '<div><span>Ruoli assegnati</span><strong>' + totalRoles + '</strong></div>' +
+          '<div class="' + (conflictContexts ? 'warning' : '') + '"><span>Ambiti da verificare</span><strong>' + conflictContexts + '</strong></div>' +
+        '</div>' +
+      '</section>' +
+      '<div class="official-role-summary-heading"><div><h2>Riepilogo ruoli</h2><p>Ordine: categorie → sottocategorie → ruoli, come configurato nella sezione Ruoli.</p></div></div>' +
+      '<div id="singleOfficialRoleSummary" class="single-official-role-summary"></div>';
 
-    const search = $('officialRoleSearch');
-    const draw = () => {
-      const query = search.value.trim().toLowerCase();
-      renderOfficialRoleCards(
-        officials.filter(item => !query || String(item.official.name || '').toLowerCase().includes(query))
-      );
+    $('backToOfficialsBtn').onclick = () => {
+      selectedOfficialId = null;
+      renderOfficials();
     };
-    search.oninput = draw;
-    draw();
+    $('editCurrentOfficialBtn').onclick = () => editOfficial(official.id);
+
+    renderSingleOfficialRoleSummary(summary);
   }
 
   function renderOfficialRows() {
@@ -446,16 +442,29 @@
       box.innerHTML = '<div class="empty-state">Nessun UG inserito.</div>';
       return;
     }
+
     state.officials.forEach(item => {
       const row = document.createElement('div');
-      row.className = 'data-row official-row';
+      row.className = 'official-list-row';
       row.innerHTML =
-        '<div class="row-title">' + esc(item.name || 'UG senza nome') + '</div>' +
-        '<div class="row-muted">' + esc(item.notes || '') + '</div>' +
-        '<div class="row-actions" data-edit><button class="icon-button edit"><span class="material-symbols-rounded">edit</span></button>' +
-        '<button class="icon-button remove"><span class="material-symbols-rounded">delete</span></button></div>';
+        '<button type="button" class="official-list-main">' +
+          '<span class="official-chip-avatar official-list-avatar">' + esc(initials(item.name || 'UG')) + '</span>' +
+          '<span class="official-list-copy"><strong>' + esc(item.name || 'UG senza nome') + '</strong>' +
+          (item.notes ? '<small>' + esc(item.notes) + '</small>' : '<small>Nessuna nota</small>') + '</span>' +
+          '<span class="material-symbols-rounded">chevron_right</span>' +
+        '</button>' +
+        '<div class="row-actions" data-edit>' +
+          '<button class="icon-button edit" title="Modifica"><span class="material-symbols-rounded">edit</span></button>' +
+          '<button class="icon-button remove" title="Elimina"><span class="material-symbols-rounded">delete</span></button>' +
+        '</div>';
+
+      row.querySelector('.official-list-main').onclick = () => {
+        selectedOfficialId = item.id;
+        renderOfficials();
+      };
       row.querySelector('.edit').onclick = () => editOfficial(item.id);
       row.querySelector('.remove').onclick = () => {
+        if (!confirm('Eliminare questo ufficiale gara e rimuoverlo da tutti i ruoli?')) return;
         state.officials = state.officials.filter(x => x.id !== item.id);
         state.roleCategories.forEach(category => rows(category.roles).forEach(role => {
           role.officialIds = rows(role.officialIds).filter(id => id !== item.id);
@@ -463,9 +472,9 @@
             role.officialIdsBySubcategory[key] = rows(role.officialIdsBySubcategory[key]).filter(id => id !== item.id);
           });
         }));
+        if (selectedOfficialId === item.id) selectedOfficialId = null;
         markDirty();
-        renderOfficialRows();
-        setReadOnly();
+        renderOfficials();
       };
       box.append(row);
     });
@@ -949,119 +958,132 @@
   }
 
 
-  function buildOfficialRoleAssignments() {
-    const byOfficial = new Map(state.officials.map(official => [
-      official.id,
-      { official, assignments: [] }
-    ]));
-
-    state.roleCategories.forEach(category => {
+  function buildSingleOfficialRoleSummary(officialId) {
+    return state.roleCategories.map((category,categoryIndex) => {
+      const roles = rows(category.roles);
       const subcategories = state.roleSubcategoriesEnabled ? rows(category.subcategories) : [];
-      rows(category.roles).forEach(role => {
-        if (subcategories.length) {
-          subcategories.forEach(sub => {
-            const contextName = String(sub.name || 'Sottocategoria').trim();
-            const conflictKey = 'sub:' + (contextName.toLowerCase().replace(/\s+/g,' ') || sub.id);
-            rows(role.officialIdsBySubcategory?.[sub.id]).forEach(officialId => {
-              if (!byOfficial.has(officialId)) return;
-              byOfficial.get(officialId).assignments.push({
-                categoryId: category.id,
-                categoryName: category.name || 'Categoria',
-                roleId: role.id,
-                roleName: role.name || 'Ruolo',
-                subcategoryId: sub.id,
-                contextName,
-                conflictKey
-              });
-            });
-          });
-        } else {
-          rows(role.officialIds).forEach(officialId => {
-            if (!byOfficial.has(officialId)) return;
-            byOfficial.get(officialId).assignments.push({
-              categoryId: category.id,
-              categoryName: category.name || 'Categoria',
-              roleId: role.id,
-              roleName: role.name || 'Ruolo',
-              subcategoryId: null,
-              contextName: 'Generale',
-              conflictKey: 'category:' + category.id
-            });
-          });
-        }
-      });
-    });
+      const categorySummary = {
+        categoryId: category.id,
+        categoryIndex,
+        categoryName: category.name || 'Categoria',
+        assignmentCount: 0,
+        conflictContexts: 0,
+        hasAssignments: false,
+        contexts: []
+      };
 
-    return [...byOfficial.values()]
-      .map(entry => {
-        const groups = new Map();
-        entry.assignments.forEach(assignment => {
-          const list = groups.get(assignment.conflictKey) || [];
-          list.push(assignment);
-          groups.set(assignment.conflictKey,list);
+      if (subcategories.length) {
+        subcategories.forEach((sub,subIndex) => {
+          const assignedRoles = roles
+            .map((role,roleIndex) => ({
+              role,
+              roleIndex,
+              assigned: rows(role.officialIdsBySubcategory?.[sub.id]).includes(officialId)
+            }))
+            .filter(item => item.assigned);
+
+          if (assignedRoles.length > 1) categorySummary.conflictContexts += 1;
+          categorySummary.assignmentCount += assignedRoles.length;
+          categorySummary.contexts.push({
+            subcategoryId: sub.id,
+            subcategoryIndex: subIndex,
+            label: sub.name || 'Sottocategoria',
+            assignedRoles,
+            hasConflict: assignedRoles.length > 1
+          });
         });
-        const conflicts = [...groups.values()].filter(list => list.length > 1);
-        return {
-          ...entry,
-          conflicts,
-          hasConflict: conflicts.length > 0,
-          hasMultiple: entry.assignments.length > 1
-        };
-      })
-      .filter(entry => entry.assignments.length)
-      .sort((a,b) => {
-        if (a.hasConflict !== b.hasConflict) return a.hasConflict ? -1 : 1;
-        if (a.assignments.length !== b.assignments.length) return b.assignments.length - a.assignments.length;
-        return String(a.official.name || '').localeCompare(String(b.official.name || ''),'it');
-      });
+      } else {
+        const assignedRoles = roles
+          .map((role,roleIndex) => ({
+            role,
+            roleIndex,
+            assigned: rows(role.officialIds).includes(officialId)
+          }))
+          .filter(item => item.assigned);
+
+        if (assignedRoles.length > 1) categorySummary.conflictContexts += 1;
+        categorySummary.assignmentCount += assignedRoles.length;
+        categorySummary.contexts.push({
+          subcategoryId: null,
+          subcategoryIndex: 0,
+          label: 'Generale',
+          assignedRoles,
+          hasConflict: assignedRoles.length > 1
+        });
+      }
+
+      categorySummary.hasAssignments = categorySummary.assignmentCount > 0;
+      return categorySummary;
+    });
   }
 
-  function renderOfficialRoleCards(items) {
-    const box = $('officialRoleCards');
+  function renderSingleOfficialRoleSummary(summary) {
+    const box = $('singleOfficialRoleSummary');
     box.innerHTML = '';
 
-    if (!items.length) {
-      box.innerHTML = '<div class="compact-empty">Nessun ufficiale gara con assegnazioni.</div>';
+    if (!state.roleCategories.length) {
+      box.innerHTML = '<div class="surface compact-empty">Non sono state configurate categorie di ruolo.</div>';
       return;
     }
 
-    items.forEach(item => {
-      const card = document.createElement('article');
-      card.className = 'official-role-card' + (item.hasConflict ? ' has-conflict' : '');
+    summary.forEach(category => {
+      const card = document.createElement('section');
+      card.className = 'surface official-category-summary' + (category.hasAssignments ? '' : ' empty-category');
       card.innerHTML =
-        '<div class="official-role-card-head">' +
-          '<span class="official-chip-avatar official-role-avatar">' + esc(initials(item.official.name || 'UG')) + '</span>' +
-          '<div class="official-role-person"><strong>' + esc(item.official.name || 'UG senza nome') + '</strong>' +
-            (item.official.notes ? '<span>' + esc(item.official.notes) + '</span>' : '') +
-          '</div>' +
-          '<div class="official-role-badges">' +
-            '<span class="role-count-badge">' + item.assignments.length + ' ' + (item.assignments.length === 1 ? 'ruolo' : 'ruoli') + '</span>' +
-            (item.hasConflict ? '<span class="conflict-badge"><span class="material-symbols-rounded">warning</span>Da verificare</span>' : '') +
-          '</div>' +
+        '<div class="official-category-summary-head">' +
+          '<span class="category-tile-number">' + String(category.categoryIndex + 1).padStart(2,'0') + '</span>' +
+          '<div><h3>' + esc(category.categoryName) + '</h3>' +
+            '<span>' + (category.hasAssignments
+              ? category.assignmentCount + ' ' + (category.assignmentCount === 1 ? 'ruolo assegnato' : 'ruoli assegnati')
+              : 'Nessun ruolo assegnato in questa categoria') +
+            '</span></div>' +
+          (category.conflictContexts
+            ? '<span class="conflict-badge"><span class="material-symbols-rounded">warning</span>Da verificare</span>'
+            : '') +
         '</div>' +
-        '<div class="official-assignment-list"></div>' +
-        (item.hasConflict
-          ? '<div class="conflict-explanation"><span class="material-symbols-rounded">info</span><span>Questo UG compare in più ruoli nello stesso ambito o sottocategoria. Verifica che le attività siano compatibili.</span></div>'
-          : '');
+        '<div class="official-category-contexts"></div>';
 
-      const list = card.querySelector('.official-assignment-list');
-      item.assignments.forEach(assignment => {
-        const isConflict = item.conflicts.some(group => group.includes(assignment));
-        const row = document.createElement('button');
-        row.type = 'button';
-        row.className = 'official-assignment-row' + (isConflict ? ' conflict' : '');
-        row.innerHTML =
-          '<span class="assignment-category">' + esc(assignment.categoryName) + '</span>' +
-          '<span class="assignment-role-name">' + esc(assignment.roleName) + '</span>' +
-          '<span class="assignment-context">' + esc(assignment.contextName) + '</span>' +
-          '<span class="material-symbols-rounded">arrow_forward</span>';
-        row.onclick = () => {
-          selectedRoleCategoryId = assignment.categoryId;
-          selectedRoleId = assignment.roleId;
-          selectedRoleSubcategoryId = assignment.subcategoryId;
-          showPage('roles');
-        };
-        list.append(row);
+      const contexts = card.querySelector('.official-category-contexts');
+
+      category.contexts.forEach(context => {
+        const block = document.createElement('div');
+        block.className = 'official-context-block' + (context.hasConflict ? ' conflict' : '') + (context.assignedRoles.length ? '' : ' empty-context');
+        block.innerHTML =
+          '<div class="official-context-head">' +
+            '<div><span class="assignment-context">' + esc(context.label) + '</span>' +
+            (context.hasConflict
+              ? '<span class="context-warning"><span class="material-symbols-rounded">warning</span>Più ruoli nello stesso ambito</span>'
+              : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="official-context-roles"></div>';
+
+        const roleList = block.querySelector('.official-context-roles');
+
+        if (!context.assignedRoles.length) {
+          roleList.innerHTML =
+            '<div class="official-no-role"><span class="material-symbols-rounded">remove_circle_outline</span>' +
+            '<span>Nessun ruolo assegnato</span></div>';
+        } else {
+          context.assignedRoles.forEach(item => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'official-role-summary-row' + (context.hasConflict ? ' conflict' : '');
+            button.innerHTML =
+              '<span class="role-order-number">' + String(item.roleIndex + 1).padStart(2,'0') + '</span>' +
+              '<span class="role-summary-name">' + esc(item.role.name || 'Ruolo') + '</span>' +
+              '<span class="material-symbols-rounded">arrow_forward</span>';
+            button.onclick = () => {
+              selectedRoleCategoryId = category.categoryId;
+              selectedRoleId = item.role.id;
+              selectedRoleSubcategoryId = context.subcategoryId;
+              showPage('roles');
+            };
+            roleList.append(button);
+          });
+        }
+
+        contexts.append(block);
       });
 
       box.append(card);
