@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b2f61">
+  <title>Gestione OW · Anteprima nuovo design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260921-1">
+</head>
+<body>
+  <div id="loginView" class="login-view hidden">
+    <div class="login-card surface">
+      <div class="login-brand">
+        <span class="brand-wave">≋</span>
+        <div>
+          <h1>Gestione OW</h1>
+          <p>Accedi per aprire l'anteprima del nuovo design.</p>
+        </div>
+      </div>
+      <form id="loginForm" class="form-stack">
+        <label>Email<input id="loginEmail" type="email" autocomplete="username" required></label>
+        <label>Password<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+        <div id="loginError" class="error"></div>
+        <button class="button primary" type="submit"><span class="material-symbols-rounded">login</span>Accedi</button>
+      </form>
+      <a class="back-current" href="../">← Torna alla versione attuale</a>
+    </div>
+  </div>
+
+  <div id="appView" class="app hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="brand">
+        <span class="brand-wave">≋</span>
+        <span>Gestione OW</span>
+      </div>
+
+      <button id="backEventsBtn" class="side-back hidden" type="button">
+        <span class="material-symbols-rounded">arrow_back</span>
+        Torna agli eventi
+      </button>
+
+      <nav id="eventNav" class="side-nav hidden" aria-label="Sezioni evento">
+        <button class="side-link active" data-page="general" type="button"><span class="material-symbols-rounded">description</span><span>Generali</span></button>
+        <button class="side-link" data-page="departures" type="button"><span class="material-symbols-rounded">waves</span><span>Ondate</span></button>
+        <button class="side-link" data-page="timeline" type="button"><span class="material-symbols-rounded">schedule</span><span>Timeline</span></button>
+        <button class="side-link" data-page="officials" type="button"><span class="material-symbols-rounded">groups</span><span>Ufficiali gara</span></button>
+        <button class="side-link" data-page="roles" type="button"><span class="material-symbols-rounded">shield_person</span><span>Ruoli</span></button>
+        <button class="side-link" data-page="notes" type="button"><span class="material-symbols-rounded">fact_check</span><span>Note e checklist</span></button>
+        <button id="permissionsSideLink" class="side-link hidden" data-page="permissions" type="button"><span class="material-symbols-rounded">lock</span><span>Permessi</span></button>
+      </nav>
+
+      <nav id="homeNav" class="side-nav">
+        <button class="side-link active" type="button"><span class="material-symbols-rounded">calendar_month</span><span>Eventi</span></button>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-user">
+        <div id="sidebarInitials" class="avatar">–</div>
+        <div class="user-copy">
+          <strong id="sidebarUserName">Utente</strong>
+          <span id="sidebarUserRole"></span>
+        </div>
+      </div>
+      <button id="logoutBtn" class="side-logout" type="button"><span class="material-symbols-rounded">logout</span>Esci</button>
+    </aside>
+
+    <section class="app-main">
+      <header class="topbar">
+        <button id="mobileMenuBtn" class="icon-button mobile-only" type="button" aria-label="Apri menu"><span class="material-symbols-rounded">menu</span></button>
+        <div id="breadcrumb" class="breadcrumb"></div>
+        <div class="top-actions">
+          <label class="top-search">
+            <span class="material-symbols-rounded">search</span>
+            <input id="topSearch" type="search" placeholder="Cerca...">
+          </label>
+          <span id="userBadge" class="top-avatar"></span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <div id="status" class="toast" role="status"></div>
+
+        <section id="homeView" class="screen">
+          <div class="page-head">
+            <div>
+              <h1>Eventi</h1>
+              <p>Gli eventi che puoi visualizzare o gestire.</p>
+            </div>
+            <div class="page-actions">
+              <button id="importEventBtn" class="button tonal hidden" type="button"><span class="material-symbols-rounded">upload</span>Importa</button>
+              <button id="newEventBtn" class="button primary hidden" type="button"><span class="material-symbols-rounded">add</span>Nuovo evento</button>
+              <input id="importEventInput" type="file" accept="application/json,.json" hidden>
+            </div>
+          </div>
+
+          <div class="home-tools">
+            <label class="search-field">
+              <span class="material-symbols-rounded">search</span>
+              <input id="eventSearch" type="search" placeholder="Cerca per nome, data o luogo">
+            </label>
+            <button id="refreshBtn" class="icon-button" type="button" title="Aggiorna"><span class="material-symbols-rounded">refresh</span></button>
+          </div>
+
+          <div id="eventList" class="event-grid"></div>
+        </section>
+
+        <section id="eventView" class="screen hidden">
+          <div class="event-head">
+            <div class="event-head-copy">
+              <h1 id="eventTitle">Evento</h1>
+              <p id="eventSubtitle"></p>
+            </div>
+            <div id="desktopCommandBar" class="command-bar desktop-only">
+              <button id="copyEventBtn" class="button ghost hidden" type="button"><span class="material-symbols-rounded">content_copy</span>Copia</button>
+              <button id="exportEventBtn" class="button ghost hidden" type="button"><span class="material-symbols-rounded">download</span>Esporta</button>
+              <button id="pdfBtn" class="button ghost" type="button"><span class="material-symbols-rounded">picture_as_pdf</span>PDF</button>
+              <button id="summaryPdfBtn" class="button ghost" type="button"><span class="material-symbols-rounded">print</span>Stampa sintetica</button>
+              <button id="saveEventBtn" class="button primary hidden" type="button"><span class="material-symbols-rounded">save</span>Salva</button>
+            </div>
+          </div>
+          <div id="pageContent"></div>
+        </section>
+      </main>
+    </section>
+
+    <div id="mobileScrim" class="scrim hidden"></div>
+  </div>
+
+  <div id="mobileActionBar" class="mobile-action-bar hidden">
+    <button id="mobileBackBtn" type="button"><span class="material-symbols-rounded">arrow_back</span><small>Eventi</small></button>
+    <button id="mobilePdfBtn" type="button"><span class="material-symbols-rounded">picture_as_pdf</span><small>PDF</small></button>
+    <button id="mobileMoreBtn" type="button"><span class="material-symbols-rounded">more_horiz</span><small>Azioni</small></button>
+    <button id="mobileSaveBtn" class="primary-action hidden" type="button"><span class="material-symbols-rounded">save</span><small>Salva</small></button>
+  </div>
+
+  <dialog id="formDialog" class="modal">
+    <form method="dialog" id="formDialogForm">
+      <div class="modal-head">
+        <div><h2 id="formDialogTitle">Modifica</h2><p id="formDialogSubtitle"></p></div>
+        <button class="icon-button" value="cancel" type="submit"><span class="material-symbols-rounded">close</span></button>
+      </div>
+      <div id="formDialogBody" class="modal-body"></div>
+      <div class="modal-foot">
+        <button class="button ghost" value="cancel" type="submit">Annulla</button>
+        <button id="formDialogSave" class="button primary" value="default" type="submit">Salva</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="newEventDialog" class="modal small-modal">
+    <form method="dialog" id="newEventForm">
+      <div class="modal-head"><div><h2>Nuovo evento</h2><p>Inserisci il nome. Gli altri dati potranno essere compilati dopo.</p></div><button class="icon-button" value="cancel"><span class="material-symbols-rounded">close</span></button></div>
+      <div class="modal-body"><label>Nome evento<input id="newEventName" required></label><div id="newEventError" class="error"></div></div>
+      <div class="modal-foot"><button class="button ghost" value="cancel">Annulla</button><button id="createEventBtn" class="button primary" value="default">Crea</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="copyEventDialog" class="modal small-modal">
+    <form method="dialog" id="copyEventForm">
+      <div class="modal-head"><div><h2>Copia evento</h2><p>Verranno copiati tutti i dati dell'evento.</p></div><button class="icon-button" value="cancel"><span class="material-symbols-rounded">close</span></button></div>
+      <div class="modal-body form-stack">
+        <label>Evento origine<input id="copySourceName" disabled></label>
+        <label>Nome nuovo evento<input id="copyEventName" required></label>
+        <div id="copyEventError" class="error"></div>
+      </div>
+      <div class="modal-foot"><button class="button ghost" value="cancel">Annulla</button><button id="confirmCopyEventBtn" class="button primary" value="default">Crea copia</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="pdfDialog" class="modal pdf-modal">
+    <div class="modal-head">
+      <div><h2 id="pdfDialogTitle">Anteprima</h2></div>
+      <div class="modal-head-actions">
+        <label class="language-picker">Lingua<select id="printLanguage"><option value="it">Italiano</option><option value="en">English</option></select></label>
+        <button id="closePdfBtn" class="icon-button" type="button"><span class="material-symbols-rounded">close</span></button>
+      </div>
+    </div>
+    <iframe id="pdfFrame" title="Anteprima stampa"></iframe>
+    <div class="modal-foot"><button id="printPdfBtn" class="button primary" type="button"><span class="material-symbols-rounded">print</span>Stampa / PDF</button></div>
+  </dialog>
+
+  <div id="mobileMoreSheet" class="bottom-sheet hidden">
+    <div class="sheet-handle"></div>
+    <button id="sheetCopyBtn" class="sheet-action hidden" type="button"><span class="material-symbols-rounded">content_copy</span>Copia evento</button>
+    <button id="sheetExportBtn" class="sheet-action hidden" type="button"><span class="material-symbols-rounded">download</span>Esporta</button>
+    <button id="sheetSummaryBtn" class="sheet-action" type="button"><span class="material-symbols-rounded">print</span>Stampa sintetica</button>
+    <button id="sheetCloseBtn" class="sheet-action" type="button"><span class="material-symbols-rounded">close</span>Chiudi</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/database.js"></script>
+  <script src="app.js?v=20260921-1"></script>
+</body>
+</html>
