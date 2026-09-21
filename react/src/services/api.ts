@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { EventAccess, EventRecord, EventSummary, GlobalAccess, PermissionRow } from '../types';
+import type { AccessRole, EventAccess, EventRecord, EventSummary, GlobalAccess, PermissionRow } from '../types';
 
 async function rpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T> {
   const { data, error } = await supabase.rpc(name, args);
