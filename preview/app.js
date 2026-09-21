@@ -389,7 +389,14 @@
   function openPrint(summary) {
     $('pdfDialogTitle').textContent = summary ? 'Stampa sintetica' : 'Anteprima PDF';
     $('pdfDialog').dataset.summary = summary ? '1' : '0';
-    $('pdfFrame').srcdoc = printHtml(summary,$('printLanguage').value);
+    const lang = $('printLanguage').value;
+    $('pdfFrame').srcdoc = summary && window.OWPrintI18n
+      ? OWPrintI18n.buildSummaryPrintHtml(
+          state,
+          new URL('css/print-summary.css?v=20260921-summary-layout', document.baseURI).href,
+          lang
+        )
+      : printHtml(false, lang);
     $('pdfDialog').showModal();
   }
 
@@ -433,7 +440,16 @@
   $('closePdfBtn').onclick = () => $('pdfDialog').close();
   $('printPdfBtn').onclick = () => { $('pdfFrame').contentWindow.focus(); $('pdfFrame').contentWindow.print(); };
   $('printLanguage').onchange = () => {
-    if ($('pdfDialog').open) $('pdfFrame').srcdoc = printHtml($('pdfDialog').dataset.summary === '1',$('printLanguage').value);
+    if (!$('pdfDialog').open) return;
+    const summary = $('pdfDialog').dataset.summary === '1';
+    const lang = $('printLanguage').value;
+    $('pdfFrame').srcdoc = summary && window.OWPrintI18n
+      ? OWPrintI18n.buildSummaryPrintHtml(
+          state,
+          new URL('css/print-summary.css?v=20260921-summary-layout', document.baseURI).href,
+          lang
+        )
+      : printHtml(false, lang);
   };
   $('mobileMenuBtn').onclick = () => toggleMenu(true);
   $('mobileScrim').onclick = () => toggleMenu(false);
