@@ -29,6 +29,7 @@
   let selectedRoleId = null;
   let selectedRoleSubcategoryId = null;
   let rolesViewMode = 'role';
+  let officialsViewMode = 'list';
 
   function toast(text, error) {
     const node = $('status');
@@ -180,7 +181,7 @@
   function setReadOnly() {
     const readOnly = !access?.canEdit;
     $('pageContent').querySelectorAll('input,textarea,select').forEach(el => {
-      if (currentPage !== 'permissions') el.disabled = readOnly;
+      if (currentPage !== 'permissions' && !el.hasAttribute('data-readonly-allow')) el.disabled = readOnly;
     });
     $('pageContent').querySelectorAll('[data-edit]').forEach(el => el.classList.toggle('hidden', readOnly));
   }
@@ -372,11 +373,70 @@
 
   function renderOfficials() {
     $('pageContent').innerHTML =
-      '<section class="surface page-card"><div class="card-head"><div class="card-title"><span class="material-symbols-rounded">groups</span><h2>Ufficiali gara</h2></div>' +
-      '<button id="addOfficialBtn" class="button primary" data-edit><span class="material-symbols-rounded">person_add</span>Aggiungi UG</button></div>' +
-      '<div id="officialRows" class="data-list"></div></section>';
+      '<div class="section-view-switcher">' +
+        '<div><h2>Ufficiali gara</h2><div class="row-muted">Gestisci gli UG oppure controlla tutti i ruoli assegnati a ciascuno.</div></div>' +
+        '<div class="segmented-control">' +
+          '<button type="button" data-officials-view="list" class="' + (officialsViewMode === 'list' ? 'active' : '') + '"><span class="material-symbols-rounded">groups</span>Elenco UG</button>' +
+          '<button type="button" data-officials-view="roles" class="' + (officialsViewMode === 'roles' ? 'active' : '') + '"><span class="material-symbols-rounded">fact_check</span>Verifica ruoli</button>' +
+        '</div>' +
+      '</div>' +
+      '<div id="officialsSectionBody"></div>';
+
+    document.querySelectorAll('[data-officials-view]').forEach(button => {
+      button.onclick = () => {
+        officialsViewMode = button.dataset.officialsView;
+        renderOfficials();
+      };
+    });
+
+    if (officialsViewMode === 'roles') renderOfficialsRoleCheck();
+    else renderOfficialsList();
+
+    setReadOnly();
+  }
+
+  function renderOfficialsList() {
+    const root = $('officialsSectionBody');
+    root.innerHTML =
+      '<section class="surface page-card">' +
+        '<div class="card-head"><div class="card-title"><span class="material-symbols-rounded">groups</span><h2>Elenco ufficiali gara</h2></div>' +
+        '<button id="addOfficialBtn" class="button primary" data-edit><span class="material-symbols-rounded">person_add</span>Aggiungi UG</button></div>' +
+        '<div id="officialRows" class="data-list"></div>' +
+      '</section>';
     $('addOfficialBtn').onclick = () => editOfficial();
     renderOfficialRows();
+  }
+
+  function renderOfficialsRoleCheck() {
+    const officials = buildOfficialRoleAssignments();
+    const multiple = officials.filter(item => item.hasMultiple).length;
+    const conflicts = officials.filter(item => item.hasConflict).length;
+    const root = $('officialsSectionBody');
+
+    root.innerHTML =
+      '<div class="official-role-summary">' +
+        '<div class="surface official-summary-card"><span>UG con ruoli</span><strong>' + officials.length + '</strong></div>' +
+        '<div class="surface official-summary-card"><span>UG con più ruoli</span><strong>' + multiple + '</strong></div>' +
+        '<div class="surface official-summary-card warning"><span>Sovrapposizioni da verificare</span><strong>' + conflicts + '</strong></div>' +
+      '</div>' +
+      '<section class="surface official-role-view">' +
+        '<div class="official-role-view-head">' +
+          '<div><h2>Verifica ruoli per UG</h2>' +
+          '<p>La segnalazione evidenzia più assegnazioni nello stesso ambito o sottocategoria. Non significa automaticamente che i ruoli siano incompatibili: serve una verifica operativa.</p></div>' +
+          '<label class="official-role-search"><span class="material-symbols-rounded">search</span><input id="officialRoleSearch" data-readonly-allow type="search" placeholder="Cerca UG"></label>' +
+        '</div>' +
+        '<div id="officialRoleCards" class="official-role-cards"></div>' +
+      '</section>';
+
+    const search = $('officialRoleSearch');
+    const draw = () => {
+      const query = search.value.trim().toLowerCase();
+      renderOfficialRoleCards(
+        officials.filter(item => !query || String(item.official.name || '').toLowerCase().includes(query))
+      );
+    };
+    search.oninput = draw;
+    draw();
   }
 
   function renderOfficialRows() {
@@ -427,31 +487,7 @@
     });
   }
 
-  function renderRolesViewSwitcher() {
-    return '<div class="roles-view-switcher">' +
-      '<div><h2>Gestione ruoli</h2><div class="row-muted">Scegli se lavorare per ruolo o controllare il carico di ogni ufficiale gara.</div></div>' +
-      '<div class="segmented-control">' +
-        '<button type="button" data-role-view="role" class="' + (rolesViewMode === 'role' ? 'active' : '') + '"><span class="material-symbols-rounded">shield_person</span>Per ruolo</button>' +
-        '<button type="button" data-role-view="official" class="' + (rolesViewMode === 'official' ? 'active' : '') + '"><span class="material-symbols-rounded">badge</span>Per UG</button>' +
-      '</div>' +
-    '</div>';
-  }
-
-  function bindRolesViewSwitcher() {
-    document.querySelectorAll('[data-role-view]').forEach(button => {
-      button.onclick = () => {
-        rolesViewMode = button.dataset.roleView;
-        renderRoles();
-      };
-    });
-  }
-
   function renderRoles() {
-    if (rolesViewMode === 'official') {
-      renderRolesByOfficial();
-      return;
-    }
-
     const categories = state.roleCategories;
     if (!selectedRoleCategoryId || !categories.some(category => category.id === selectedRoleCategoryId)) {
       selectedRoleCategoryId = categories[0]?.id || null;
@@ -469,34 +505,31 @@
     }
 
     $('pageContent').innerHTML =
-      renderRolesViewSwitcher() +
-      '<div class="role-workspace">' +
-        '<section class="surface role-pane category-pane">' +
-          '<div class="role-pane-head">' +
-            '<div><span class="eyebrow">1</span><h2>Categorie</h2></div>' +
-            '<button id="addCategoryBtn" class="icon-button" data-edit title="Nuova categoria"><span class="material-symbols-rounded">add</span></button>' +
+      '<div class="roles-editor-heading">' +
+        '<div><h2>Gestione ruoli</h2><div class="row-muted">Definisci categorie e ruoli, poi assegna gli ufficiali gara.</div></div>' +
+      '</div>' +
+      '<div class="roles-editor-layout">' +
+        '<aside class="surface roles-structure-panel">' +
+          '<div class="structure-block">' +
+            '<div class="structure-head"><div><span class="eyebrow">1</span><strong>Categorie</strong></div>' +
+            '<button id="addCategoryBtn" class="icon-button" data-edit title="Nuova categoria"><span class="material-symbols-rounded">add</span></button></div>' +
+            '<div id="roleCategoryNav" class="role-category-list"></div>' +
           '</div>' +
-          '<div id="roleCategoryNav" class="role-category-list"></div>' +
-        '</section>' +
-
-        '<section class="surface role-pane roles-pane">' +
-          '<div id="categoryEditor"></div>' +
-          '<div class="role-pane-head roles-list-head">' +
-            '<div><span class="eyebrow">2</span><h2>Ruoli</h2></div>' +
-            '<button id="addRoleBtn" class="button tonal" data-edit><span class="material-symbols-rounded">add</span>Nuovo ruolo</button>' +
+          '<div class="structure-divider"></div>' +
+          '<div class="structure-block">' +
+            '<div class="structure-head"><div><span class="eyebrow">2</span><strong>Ruoli</strong></div>' +
+            '<button id="addRoleBtn" class="small-add-button" data-edit title="Nuovo ruolo"><span class="material-symbols-rounded">add</span></button></div>' +
+            '<div id="roleNavList" class="role-nav-list"></div>' +
           '</div>' +
-          '<div id="roleNavList" class="role-nav-list"></div>' +
-        '</section>' +
-
-        '<section class="surface role-pane assignment-pane">' +
-          '<div class="role-pane-head">' +
-            '<div><span class="eyebrow">3</span><h2>Assegnazioni</h2></div>' +
-          '</div>' +
-          '<div id="roleAssignmentEditor"></div>' +
-        '</section>' +
+        '</aside>' +
+        '<main class="roles-editor-main">' +
+          '<section class="surface category-settings-card"><div id="categoryEditor"></div></section>' +
+          '<section class="surface assignment-pane">' +
+            '<div class="role-pane-head"><div><span class="eyebrow">3</span><h2>Assegnazioni</h2></div></div>' +
+            '<div id="roleAssignmentEditor"></div>' +
+          '</section>' +
+        '</main>' +
       '</div>';
-
-    bindRolesViewSwitcher();
 
     $('addCategoryBtn').onclick = () => {
       const category = {id:uid(),name:'Nuova categoria',subcategories:[],roles:[]};
@@ -983,40 +1016,6 @@
       });
   }
 
-  function renderRolesByOfficial() {
-    const officials = buildOfficialRoleAssignments();
-    const multiple = officials.filter(item => item.hasMultiple).length;
-    const conflicts = officials.filter(item => item.hasConflict).length;
-
-    $('pageContent').innerHTML =
-      renderRolesViewSwitcher() +
-      '<div class="official-role-summary">' +
-        '<div class="surface official-summary-card"><span>UG con ruoli</span><strong>' + officials.length + '</strong></div>' +
-        '<div class="surface official-summary-card"><span>UG con più ruoli</span><strong>' + multiple + '</strong></div>' +
-        '<div class="surface official-summary-card warning"><span>Sovrapposizioni da verificare</span><strong>' + conflicts + '</strong></div>' +
-      '</div>' +
-      '<section class="surface official-role-view">' +
-        '<div class="official-role-view-head">' +
-          '<div><h2>Ruoli per ufficiale gara</h2>' +
-          '<p>Le segnalazioni indicano assegnazioni multiple nello stesso ambito. Sono controlli da verificare, non una certezza di incompatibilità oraria.</p></div>' +
-          '<label class="official-role-search"><span class="material-symbols-rounded">search</span><input id="officialRoleSearch" type="search" placeholder="Cerca UG"></label>' +
-        '</div>' +
-        '<div id="officialRoleCards" class="official-role-cards"></div>' +
-      '</section>';
-
-    bindRolesViewSwitcher();
-
-    const search = $('officialRoleSearch');
-    const draw = () => {
-      const query = search.value.trim().toLowerCase();
-      renderOfficialRoleCards(
-        officials.filter(item => !query || String(item.official.name || '').toLowerCase().includes(query))
-      );
-    };
-    search.oninput = draw;
-    draw();
-  }
-
   function renderOfficialRoleCards(items) {
     const box = $('officialRoleCards');
     box.innerHTML = '';
@@ -1057,11 +1056,10 @@
           '<span class="assignment-context">' + esc(assignment.contextName) + '</span>' +
           '<span class="material-symbols-rounded">arrow_forward</span>';
         row.onclick = () => {
-          rolesViewMode = 'role';
           selectedRoleCategoryId = assignment.categoryId;
           selectedRoleId = assignment.roleId;
           selectedRoleSubcategoryId = assignment.subcategoryId;
-          renderRoles();
+          showPage('roles');
         };
         list.append(row);
       });
