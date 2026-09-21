@@ -151,7 +151,7 @@
       $('permissionsSideLink').classList.toggle('hidden', !access?.canManagePermissions);
       $('mobileActionBar')?.classList.remove('hidden');
       $('mobileTopBackBtn')?.classList.remove('hidden');
-      $('mobileMenuBtn')?.classList.add('hidden');
+      $('mobileMenuBtn')?.classList.remove('hidden');
       updateHeader();
       updateActions();
       showPage('general');
