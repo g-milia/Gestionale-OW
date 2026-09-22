@@ -1,7 +1,9 @@
-name: React build
+name: React preview build
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'react/**'
       - '.github/workflows/react-build.yml'
@@ -10,20 +12,53 @@ on:
       - 'react/**'
       - '.github/workflows/react-build.yml'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: react
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
       - name: Install
+        working-directory: react
         run: npm install
-      - name: Build
+
+      - name: Build React preview
+        working-directory: react
+        env:
+          VITE_BASE_PATH: /Gestionale-OW/react-preview/
         run: npm run build
+
+      - name: Verify build
+        run: test -f react/dist/index.html
+
+      - name: Publish build into react-preview
+        if: github.event_name == 'push'
+        run: |
+          rm -rf react-preview
+          mkdir -p react-preview
+          cp -R react/dist/. react-preview/
+          touch react-preview/.nojekyll
+
+      - name: Commit React preview
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A react-preview
+          if git diff --cached --quiet; then
+            echo "No preview changes to commit"
+            exit 0
+          fi
+          git commit -m "Pubblica React preview"
+          git push origin HEAD:main
